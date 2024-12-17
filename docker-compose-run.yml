@@ -1,0 +1,22 @@
+services:
+  database:
+    image: mysql:8.3
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: app_schema
+      MYSQL_USER: mysql
+      MYSQL_PASSWORD: mysql
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      spring_profiles_active: docker
+    links:
+      - database
+volumes:
+  mysql_data:

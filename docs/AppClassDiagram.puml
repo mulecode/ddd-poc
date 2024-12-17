@@ -1,0 +1,67 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+package interface {
+    class UserResponse {
+        + name: string
+        - mapsFrom(dto: UserDto)
+        - mapsTo(): UserDto
+    }
+    interface UserApi {
+        + getUser(id): UserResponse
+    }
+    class UserController {
+        + getUser(id): UserResponse
+    }
+}
+
+package application {
+    class UserDto {
+        + name: string
+    }
+    class UserService {
+        + getUser(id): UserDto
+        - toDto(UserModel): UserDto
+    }
+}
+package domain {
+    class UserModel {
+        + id: String
+        + name: String
+        + createUser(name): UserModel
+        + activateStatus()
+    }
+    interface UserModelRepository {
+        + loadById(id): UserModel
+    }
+}
+package infrastructure {
+    class UserModelRepositoryImpl {
+        + loadById(id): UserModel
+        - toModel(UserEntity): UserModel
+        - toEntity(UserModel): UserEntity
+    }
+    interface JPAUserRepository {
+        + findById(id): UserEntity
+    }
+    entity UserEntity {
+        + id: string
+        + name: string
+    }
+}
+
+
+UserController ..|> UserApi : implements
+UserController ..> UserService : uses
+UserController ..> UserResponse : uses
+
+UserService ..> UserModel : orchestrates
+UserService ..> UserDto : uses
+UserService ..> UserModelRepository: uses
+
+
+
+UserModelRepositoryImpl ..> UserModelRepository: implements
+UserModelRepositoryImpl ..> JPAUserRepository: uses
+
+@enduml
