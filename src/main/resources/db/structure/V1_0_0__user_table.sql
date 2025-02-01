@@ -1,7 +1,8 @@
 CREATE TABLE users
 (
-    id     VARCHAR(100) PRIMARY KEY UNIQUE,
-    name   VARCHAR(100) NOT NULL,
-    email  VARCHAR(100) NOT NULL,
-    status VARCHAR(100) NOT NULL
+    id      VARCHAR(100) PRIMARY KEY UNIQUE,
+    name    VARCHAR(100) NOT NULL,
+    email   VARCHAR(100) NOT NULL,
+    status  VARCHAR(100) NOT NULL,
+    version INTEGER DEFAULT 0
 )

@@ -2,11 +2,11 @@ plugins {
     id 'idea'
     id 'java'
     id 'groovy'
-    id 'org.jetbrains.kotlin.jvm' version '1.9.25'
-    id 'org.jetbrains.kotlin.plugin.spring' version '1.9.25'
     id 'org.springframework.boot' version '3.4.0'
     id 'io.spring.dependency-management' version '1.1.6'
-    id 'org.jetbrains.kotlin.plugin.jpa' version '1.9.25'
+    id 'org.jetbrains.kotlin.jvm' version '2.0.21'
+    id 'org.jetbrains.kotlin.plugin.spring' version '2.0.21'
+    id 'org.jetbrains.kotlin.plugin.jpa' version '2.0.21'
 }
 
 group = 'uk.co.mulecode.ddd'
@@ -15,6 +15,13 @@ version = '1.0.0'
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+
+kotlin {
+    jvmToolchain(21)
+    compilerOptions {
+        freeCompilerArgs.addAll '-Xjsr305=strict'
     }
 }
 
@@ -46,19 +53,13 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-kotlin {
-    compilerOptions {
-        freeCompilerArgs.addAll '-Xjsr305=strict'
-    }
-}
-
 allOpen {
     annotation 'jakarta.persistence.Entity'
     annotation 'jakarta.persistence.MappedSuperclass'
     annotation 'jakarta.persistence.Embeddable'
 }
 
-tasks.withType(Test) {
+tasks.withType(Test).configureEach {
     maxParallelForks = Runtime.runtime.availableProcessors()
     useJUnitPlatform()
 }

@@ -1,6 +1,7 @@
 package uk.co.mulecode.ddd.application.dto
 
 import uk.co.mulecode.ddd.domain.model.PointLedgerRecordModel
+import java.util.*
 
 
 data class PointsLedgeBalanceDto(
@@ -16,7 +17,7 @@ data class PointsLedgeBalanceDto(
 }
 
 data class PointsLedgerRecordDto(
-    val id: String,
+    val id: String?,
     val points: Int,
     val balanceAfter: Int,
     val operation: String,

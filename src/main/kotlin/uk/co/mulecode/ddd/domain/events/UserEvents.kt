@@ -9,7 +9,3 @@ class UserCreatedEvent(
 class UserActivatedEvent(
     val user: UserModel
 ) : DomainEvent()
-
-class UserCountScheduledEvent(
-    val total: Int
-) : DomainEvent()

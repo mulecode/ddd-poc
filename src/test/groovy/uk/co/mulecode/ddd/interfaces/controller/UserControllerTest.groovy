@@ -45,8 +45,9 @@ class UserControllerTest extends ControllerTest {
 
     def "should return users details list"() {
         given: "A user is registered"
+        def userId = "userId_v1"
         userService.getAllUsers() >> [
-                new UserDto("1", "John Doe", "email@fake.com")
+                new UserDto(userId, "John Doe", "email@fake.com")
         ]
 
         when: "We call the endpoint to retrieve the user"
@@ -60,7 +61,7 @@ class UserControllerTest extends ControllerTest {
                 .andExpect(jsonPath('$[*]').value(
                         Matchers.hasItem(
                                 Matchers.anyOf(
-                                        Matchers.hasEntry("id", "1"),
+                                        Matchers.hasEntry("id", userId),
                                         Matchers.hasEntry("name", "John Doe"),
                                         Matchers.hasEntry("email", "email@fake.com")
                                 )
@@ -75,9 +76,12 @@ class UserControllerTest extends ControllerTest {
                 "loren@email.com"
         )
 
+        and: "Expected identification"
+        def userId = UUID.randomUUID()
+
         and: "a user is registered"
         userService.registerUser(userRegistrationDto) >> Stub(UserDto) {
-            getId() >> "1"
+            getId() >> userId
             getName() >> userRegistrationDto.name
             getEmail() >> userRegistrationDto.email
         }
@@ -92,7 +96,7 @@ class UserControllerTest extends ControllerTest {
         then: "The response status is OK and the user details are returned"
         mockMvc.perform(asyncDispatch(result))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath('$.id').value("1"))
+                .andExpect(jsonPath('$.id').value(userId.toString()))
                 .andExpect(jsonPath('$.name').value("Loren Ipsum"))
                 .andExpect(jsonPath('$.email').value("loren@email.com"))
     }

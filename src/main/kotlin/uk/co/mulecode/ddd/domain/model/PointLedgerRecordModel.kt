@@ -16,7 +16,7 @@ enum class TransactionStatus {
 }
 
 class PointLedgerRecordModel(
-    val id: String,
+    val id: String? = null,
     val userId: String,
     var points: Int,
     val type: TransactionType,
@@ -27,12 +27,12 @@ class PointLedgerRecordModel(
     val createdAt: LocalDateTime,
     val transactionHash: String
 ) {
+    private val infraContext = mutableMapOf<String, Any>()
 
     fun debit(points: Int, description: String): PointLedgerRecordModel {
         val newBalance = this.balance + points
         val newTransactionHash = calculateHash(points, newBalance, description)
         return PointLedgerRecordModel(
-            id = UUID.randomUUID().toString(),
             userId = userId,
             points = points,
             type = TransactionType.DEBIT,
@@ -49,7 +49,6 @@ class PointLedgerRecordModel(
         val newBalance = this.balance - points
         val newTransactionHash = calculateHash(points, newBalance, description)
         return PointLedgerRecordModel(
-            id = UUID.randomUUID().toString(),
             userId = userId,
             points = points,
             type = TransactionType.CREDIT,
@@ -73,12 +72,19 @@ class PointLedgerRecordModel(
         return hashBytes.joinToString("") { "%02x".format(it) }
     }
 
+    fun getInfraContext(): MutableMap<String, Any> {
+        return infraContext
+    }
+
+    fun setInfraContext(key: String, value: Any) {
+        infraContext[key] = value
+    }
+
     companion object {
         @JvmStatic
         fun initiateLedger(userId: String): PointLedgerRecordModel {
             val initialBalance = 0
             return PointLedgerRecordModel(
-                id = UUID.randomUUID().toString(),
                 userId = userId,
                 points = 0,
                 type = TransactionType.DEBIT,

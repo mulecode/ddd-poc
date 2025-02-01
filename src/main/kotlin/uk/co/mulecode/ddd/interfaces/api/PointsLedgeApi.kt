@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import uk.co.mulecode.ddd.application.dto.PointsLedgeBalanceDto
 import uk.co.mulecode.ddd.application.dto.PointsLedgerRecordDto
+import java.util.UUID
 import java.util.concurrent.CompletableFuture
 
 @RestController

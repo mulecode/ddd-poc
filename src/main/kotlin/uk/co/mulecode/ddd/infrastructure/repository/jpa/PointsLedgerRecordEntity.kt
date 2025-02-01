@@ -11,7 +11,7 @@ import java.time.LocalDateTime
 @Table(name = "points_ledger_records")
 class PointsLedgerRecordEntity(
     @Id
-    val id: String,
+    val id: String? = null,
     @Column(nullable = false)
     val userId: String,
     @Column(nullable = false)
@@ -19,7 +19,7 @@ class PointsLedgerRecordEntity(
     @Column(nullable = false)
     val transactionType: String,
     @Column(nullable = true)
-    val description: String,
+    var description: String,
     @Column(nullable = false)
     val systemDescription: String,
     @Column(nullable = false)

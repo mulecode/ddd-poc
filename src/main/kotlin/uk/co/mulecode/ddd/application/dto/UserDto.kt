@@ -4,9 +4,10 @@ import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
 import uk.co.mulecode.ddd.domain.model.UserModel
+import java.util.*
 
 data class UserDto(
-    val id: String,
+    val id: String?,
     val name: String,
     val email: String
 ) {

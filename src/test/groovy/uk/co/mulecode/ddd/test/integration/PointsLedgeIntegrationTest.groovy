@@ -1,5 +1,6 @@
 package uk.co.mulecode.ddd.test.integration
 
+
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import uk.co.mulecode.ddd.IntegrationMinTest
