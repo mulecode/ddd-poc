@@ -11,12 +11,14 @@ import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
 import uk.co.mulecode.ddd.domain.model.UserStatus
+import java.util.*
 
 @Entity
 @Table(name = "users")
 class UserEntity(
     @Id
-    val id: String? = null,
+    @Column(name = "id", updatable = false, nullable = false)
+    val id: String,
     @NotBlank
     @Size(min = 5, max = 50)
     var name: String,

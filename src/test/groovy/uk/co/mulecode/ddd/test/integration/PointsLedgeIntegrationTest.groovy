@@ -1,6 +1,5 @@
 package uk.co.mulecode.ddd.test.integration
 
-
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.MediaType
 import uk.co.mulecode.ddd.IntegrationMinTest
@@ -10,6 +9,7 @@ import uk.co.mulecode.ddd.application.service.UserService
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
@@ -30,27 +30,32 @@ class PointsLedgeIntegrationTest extends IntegrationMinTest {
 
         when: "We call the endpoint to retrieve the user's points balance"
         def result = mockMvc.perform(get("/points/balance")
-                .queryParam("userId", createdUsed.id)
+                .queryParam("userId", createdUsed.id.toString())
                 .accept(MediaType.APPLICATION_JSON))
                 .andReturn()
 
         then: "The response status is OK and the user points balance is returned"
         mockMvc.perform(asyncDispatch(result))
+                .andDo(print())
                 .andExpect(status().is2xxSuccessful())
                 .andExpect(jsonPath('$.balance').value(0))
     }
 
     def "should return error when ledger not found for user"() {
+        given: "Random user id"
+        def userId = UUID.randomUUID().toString()
+
         when: "We call the endpoint to retrieve the user's points balance"
         def result = mockMvc.perform(get("/points/balance")
-                .queryParam("userId", "INVALID_USER_ID_TEST")
+                .queryParam("userId", userId)
                 .accept(MediaType.APPLICATION_JSON))
                 .andReturn()
 
         then: "The response status is BAD REQUEST and message"
         mockMvc.perform(asyncDispatch(result))
+                .andDo(print())
                 .andExpect(status().is4xxClientError())
-                .andExpect(jsonPath('$.message').value("No points ledger record found for user INVALID_USER_ID_TEST"))
+                .andExpect(jsonPath('$.message').value("No points ledger record found for user: " + userId))
     }
 
 }

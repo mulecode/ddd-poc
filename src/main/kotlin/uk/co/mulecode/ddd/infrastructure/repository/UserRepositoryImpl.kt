@@ -9,8 +9,7 @@ import uk.co.mulecode.ddd.domain.model.UserModel
 import uk.co.mulecode.ddd.domain.repository.UserRepository
 import uk.co.mulecode.ddd.infrastructure.repository.jpa.JpaUserRepository
 import uk.co.mulecode.ddd.infrastructure.repository.jpa.UserEntity
-import java.util.UUID
-import kotlin.math.log
+import java.util.*
 
 private const val AGGREGATE_ROOT_NAME = "entity"
 
@@ -23,9 +22,9 @@ class UserRepositoryImpl(
     private val log = KotlinLogging.logger {}
 
     @Transactional(readOnly = true)
-    override fun loadUser(userId: String): UserModel {
+    override fun loadUser(userId: UUID): UserModel {
         log.info { "Repository: Loading user $userId" }
-        return jpaUserRepository.findByIdOrNull(userId)
+        return jpaUserRepository.findByIdOrNull(userId.toString())
             ?.let { toModel(it, detached = false) }
             ?: throw IllegalArgumentException("User not found for id $userId")
     }
@@ -69,7 +68,7 @@ class UserRepositoryImpl(
 
         fun toModel(userEntity: UserEntity, detached: Boolean = true): UserModel {
             val model = UserModel(
-                id = userEntity.id,
+                id = UUID.fromString(userEntity.id),
                 name = userEntity.name,
                 email = userEntity.email,
                 status = userEntity.status
@@ -92,7 +91,7 @@ class UserRepositoryImpl(
             } else {
                 log.info { "Creating new user entity" }
                 UserEntity(
-                    id = UUID.randomUUID().toString(),
+                    id = userModel.id.toString(),
                     name = userModel.name,
                     email = userModel.email,
                     status = userModel.status

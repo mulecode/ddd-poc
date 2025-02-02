@@ -41,6 +41,7 @@ dependencies {
     implementation 'org.flywaydb:flyway-core'
     implementation 'org.flywaydb:flyway-mysql'
     implementation 'org.codehaus.groovy:groovy:3.0.19'
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.1"
 
     runtimeOnly 'com.mysql:mysql-connector-j:8.4.0'
 

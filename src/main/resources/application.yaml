@@ -1,5 +1,14 @@
 spring.application.name: ddd-poc
 ---
+# Logging configuration
+logging:
+  level:
+    root: INFO
+    org.springframework: ERROR
+    org.hibernate: ERROR
+    uk.co.mulecode: DEBUG
+
+---
 # Server configuration
 server:
   address: 0.0.0.0
@@ -31,6 +40,7 @@ spring.jpa:
   open-in-view: false
   properties:
     hibernate:
+      type_preferred_uuid_jdbc_type: VARCHAR
       jdbc.batch_size: 50
       default_schema: app_schema
       order_inserts: true

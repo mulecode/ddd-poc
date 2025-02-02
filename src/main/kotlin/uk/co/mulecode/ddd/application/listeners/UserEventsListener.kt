@@ -8,6 +8,7 @@ import uk.co.mulecode.ddd.domain.events.UserCreatedEvent
 
 @Component
 class UserEventsListener {
+
     private val log = KotlinLogging.logger { }
 
     @TransactionalEventListener

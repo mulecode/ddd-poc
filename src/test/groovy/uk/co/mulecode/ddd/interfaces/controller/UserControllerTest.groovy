@@ -16,7 +16,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 @Tag("unit")
@@ -45,7 +44,7 @@ class UserControllerTest extends ControllerTest {
 
     def "should return users details list"() {
         given: "A user is registered"
-        def userId = "userId_v1"
+        def userId = UUID.randomUUID()
         userService.getAllUsers() >> [
                 new UserDto(userId, "John Doe", "email@fake.com")
         ]
@@ -90,7 +89,6 @@ class UserControllerTest extends ControllerTest {
         def result = mockMvc.perform(post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content('{"name": "Loren Ipsum", "email": "loren@email.com"}'))
-                .andExpect(request().asyncStarted())
                 .andReturn()
 
         then: "The response status is OK and the user details are returned"

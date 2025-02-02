@@ -11,7 +11,7 @@ enum class UserStatus {
 }
 
 class UserModel(
-    val id: String? = null,
+    val id: UUID,
     val name: String,
     val email: String,
     var status: UserStatus = UserStatus.INACTIVE
@@ -45,6 +45,7 @@ class UserModel(
         @JvmStatic
         fun createUser(name: String, email: String): UserModel {
             val user = UserModel(
+                id = UUID.randomUUID(),
                 name = name,
                 email = email
             )

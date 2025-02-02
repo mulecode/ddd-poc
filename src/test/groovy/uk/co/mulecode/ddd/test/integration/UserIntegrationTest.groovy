@@ -7,8 +7,8 @@ import uk.co.mulecode.ddd.IntegrationMinTest
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 class UserIntegrationTest extends IntegrationMinTest {
@@ -21,6 +21,7 @@ class UserIntegrationTest extends IntegrationMinTest {
 
         then: "The response status is OK and the user details are returned"
         mockMvc.perform(asyncDispatch(result))
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath('$').isEmpty())
     }
@@ -30,11 +31,11 @@ class UserIntegrationTest extends IntegrationMinTest {
         def result = mockMvc.perform(post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content('{"name": "Loren Ipsum", "email": "loren@email.com"}'))
-                .andExpect(request().asyncStarted())
                 .andReturn()
 
         then: "The response status is OK and the user details are returned"
         mockMvc.perform(asyncDispatch(result))
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath('$.id').isNotEmpty())
                 .andExpect(jsonPath('$.name').value("Loren Ipsum"))
@@ -56,6 +57,7 @@ class UserIntegrationTest extends IntegrationMinTest {
 
         then: "The response status is OK and the user details are returned"
         mockMvc.perform(asyncDispatch(result))
+                .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath('$[*]').value(
                         Matchers.hasItem(

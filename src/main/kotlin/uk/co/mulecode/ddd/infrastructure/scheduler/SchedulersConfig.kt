@@ -8,7 +8,7 @@ class SchedulersConfig(
     private val countUsersSchedulerImpl: CountUsersSchedulerImpl
 ) {
 
-    @Scheduled(fixedRate = 10000) // Runs every 10 seconds
+    @Scheduled(fixedRate = 60000) // Runs every 60 seconds
     fun scheduleCountUsers() {
         countUsersSchedulerImpl.generateReport()
     }
