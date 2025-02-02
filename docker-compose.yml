@@ -1,0 +1,16 @@
+# https://java.testcontainers.org/supported_docker_environment/continuous_integration/dind_patterns/
+services:
+  java:
+    image: ghcr.io/mulecode/tool-set-java:2.0.0.local
+    stop_signal: SIGKILL
+    stdin_open: true
+    tty: true
+    working_dir: /opt/app
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - gradle_cache:/root/.gradle
+      - .:/opt/app
+    environment:
+      TESTCONTAINERS_HOST_OVERRIDE: host.docker.internal
+volumes:
+  gradle_cache:

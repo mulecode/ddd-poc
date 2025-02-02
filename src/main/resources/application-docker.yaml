@@ -1,0 +1,13 @@
+---
+spring.datasource:
+  # This is a docker URL, so we need to use the service name
+  url: jdbc:mysql://database:3306/app_schema?useSSL=false&allowPublicKeyRetrieval=true
+  username: root
+  password: root
+  driver-class-name: com.mysql.cj.jdbc.Driver
+  hikari:
+    connectionTimeout: 30000    # 30 sec (Timeout settings for getting a connection from the pool)
+    idleTimeout: 60000          # 60sec (Timeout for releasing idle connections from the pool)
+    maxLifetime: 180000         # 180sec (The max lifetime of a connection. Connection exceeding this will be release from the pool.)
+    minimumIdle: 5              # min 5 idle connections (The min connections to keep in the pool. This value should be small.)
+    maximumPoolSize: 10         # max 10 connections in pool

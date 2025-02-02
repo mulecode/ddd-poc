@@ -1,0 +1,96 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+package interface {
+    interface UserApi {
+        + registerUser(UserRegistrationDto): UserDto
+        + getAllUsers(): List<UserDto>
+    }
+    class UserController {
+        + registerUser(userRegistrationDto): UserDto
+        + getAllUsers(): List<UserDto>
+    }
+}
+
+package application {
+    class UserDto {
+        + name: string
+    }
+    class UserService {
+        + getUser(id): UserDto
+        - toDto(UserModel): UserDto
+    }
+    class CountUserReportService {
+        - reportCountUserRepository: ReportCountUserRepository
+        + generateCountUserReport()
+    }
+    interface CountUsersScheduler {
+        + getCountUserReportService(): CountUserReportService
+        - generateReport()
+    }
+}
+package domain {
+    class UserModel {
+        + id: String
+        + name: String
+        + createUser(name): UserModel
+        + activateStatus()
+    }
+    interface UserRepository {
+        + registerUser(UserModel): UserModel
+        + getAllUsers(): List<UserModel>
+    }
+    interface ReportCountUserRepository {
+        + getReport(): ReportCountUsersModel
+    }
+}
+package infrastructure {
+    class UserRepositoryImpl {
+        - eventPublisher: ApplicationEventPublisher
+        - jpaUserRepository: JpaUserRepository
+        + loadById(id): UserModel
+        - toModel(UserEntity): UserModel
+        - toEntity(UserModel): UserEntity
+    }
+    class ReportCountUserRepositoryImpl {
+        - jpaUserRepository: JpaUserRepository
+        + getReport(): ReportCountUsersModel
+    }
+    interface JPAUserRepository {
+    }
+    interface ApplicationEventPublisher {
+    }
+    entity UserEntity {
+        + id: string
+        + name: string
+        + email: string
+        + status: string
+    }
+    class CountUsersSchedulerImpl {
+        - countUserReportService: CountUserReportService
+        + getCountUserReportService(): CountUserReportService
+    }
+    class SchedulersConfig {
+        + countUsersSchedulerImpl: CountUsersSchedulerImpl
+        + @Scheduled scheduleCountUsers()
+    }
+}
+
+
+'Interface
+UserController ..|> UserApi : implements
+UserController ..> UserService : uses
+
+'Application
+UserService *.. UserRepository: uses
+
+CountUserReportService *.. ReportCountUserRepository: uses
+CountUsersSchedulerImpl ..|> CountUsersScheduler: implements
+CountUsersSchedulerImpl *.. CountUserReportService: uses
+SchedulersConfig *.. CountUsersSchedulerImpl: uses
+UserRepositoryImpl ..|> UserRepository: implements
+UserRepositoryImpl *.. JPAUserRepository: uses
+UserRepositoryImpl *.. ApplicationEventPublisher: uses
+ReportCountUserRepositoryImpl *.. JPAUserRepository: uses
+ReportCountUserRepositoryImpl ..|> ReportCountUserRepository: implements
+@enduml

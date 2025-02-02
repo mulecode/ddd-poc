@@ -1,0 +1,13 @@
+---
+# Data Source Configuration
+spring.datasource:
+  url: jdbc:h2:mem:app_schema;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+  driver-class-name: org.h2.Driver
+  username: sa
+  password:
+---
+#  H2 Console Configuration
+spring.h2:
+  console:
+    enabled: true
+    path: /h2
