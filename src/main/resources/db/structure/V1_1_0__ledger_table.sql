@@ -1,6 +1,7 @@
 CREATE TABLE ledger
 (
     id                    VARCHAR(36) PRIMARY KEY UNIQUE,
+    previous_id           VARCHAR(36)  DEFAULT NULL,
     user_id               VARCHAR(36)    NOT NULL,
     payer_account_id      VARCHAR(100) DEFAULT NULL,
     payee_account_id      VARCHAR(100) DEFAULT NULL,
@@ -23,7 +24,8 @@ CREATE TABLE ledger
 
     version               INTEGER      DEFAULT 0,
 
-    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (id)
+    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (id),
+    CONSTRAINT fk_prev_id FOREIGN KEY (previous_id) REFERENCES ledger (id)
 );
 
 CREATE INDEX idx_user_id ON ledger (user_id);

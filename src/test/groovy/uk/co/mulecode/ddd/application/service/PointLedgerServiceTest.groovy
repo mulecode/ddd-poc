@@ -9,13 +9,13 @@ import uk.co.mulecode.ddd.UnitTest
 import uk.co.mulecode.ddd.domain.model.TransactionCategory
 import uk.co.mulecode.ddd.domain.model.TransactionStatus
 import uk.co.mulecode.ddd.domain.model.TransactionType
-import uk.co.mulecode.ddd.infrastructure.repository.PointsLedgerRecordRepositoryImpl
+import uk.co.mulecode.ddd.infrastructure.repository.LedgerRepositoryImpl
 import uk.co.mulecode.ddd.infrastructure.repository.jpa.JpaLedgerRepository
 import uk.co.mulecode.ddd.infrastructure.repository.jpa.LedgerRecordEntity
 
 @SpringBootTest(classes = [
         PointLedgerService,
-        PointsLedgerRecordRepositoryImpl
+        LedgerRepositoryImpl
 ])
 @ActiveProfiles("test")
 class PointLedgerServiceTest extends UnitTest {

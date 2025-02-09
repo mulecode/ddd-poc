@@ -115,13 +115,12 @@ class CachedBodyHttpServletResponse(
     override fun getWriter(): PrintWriter = writer
 
     override fun flushBuffer() {
-        writer.flush()
-        val responseBytes = captureStream.toByteArray()
-
-        // Ensure the response body is written back to the original response
-        response.outputStream.write(responseBytes)
-        response.outputStream.flush()
-
+        if (!response.isCommitted) { // Prevent writing twice
+            writer.flush()
+            val responseBytes = captureStream.toByteArray()
+            response.outputStream.write(responseBytes)
+            response.outputStream.flush()
+        }
         super.flushBuffer()
     }
 

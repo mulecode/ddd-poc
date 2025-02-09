@@ -21,6 +21,8 @@ class LedgerRecordEntity(
     @Id
     @Column(name = "id", updatable = false, nullable = false)
     val id: String,
+    @Column(name = "previous_id", updatable = false, nullable = true)
+    val previousId: String?,
     @Column(name = "user_id", updatable = false, nullable = false)
     val userId: String,
     @Column(nullable = true)

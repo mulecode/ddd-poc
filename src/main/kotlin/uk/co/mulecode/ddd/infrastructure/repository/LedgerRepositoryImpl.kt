@@ -2,28 +2,23 @@ package uk.co.mulecode.ddd.infrastructure.repository
 
 import io.github.oshai.kotlinlogging.KLogger
 import io.github.oshai.kotlinlogging.KotlinLogging
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.launch
 import org.springframework.data.domain.PageRequest
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import uk.co.mulecode.ddd.application.utils.JsonUtils
 import uk.co.mulecode.ddd.domain.model.PointLedgerRecordModel
-import uk.co.mulecode.ddd.domain.repository.PointsLedgerRecordRepository
+import uk.co.mulecode.ddd.domain.repository.LedgerRepository
 import uk.co.mulecode.ddd.infrastructure.repository.jpa.JpaLedgerRepository
 import uk.co.mulecode.ddd.infrastructure.repository.jpa.LedgerRecordEntity
-import java.security.MessageDigest
 import java.time.LocalDateTime
-import java.util.UUID
+import java.util.*
 
 private const val AGGREGATE_ROOT_NAME = "entity"
 
 @Component
-class PointsLedgerRecordRepositoryImpl(
+class LedgerRepositoryImpl(
     private val jpaLedgerRepository: JpaLedgerRepository
-) : PointsLedgerRecordRepository {
+) : LedgerRepository {
 
     private val log: KLogger = KotlinLogging.logger {}
 
@@ -50,52 +45,11 @@ class PointsLedgerRecordRepositoryImpl(
             .content.map { toModel(it) }
     }
 
-    /**
-     * Mines a nonce for a given data string that meets the specified difficulty.
-     *
-     * This function uses multiple coroutines to find a nonce that, when combined with the input data,
-     * produces a SHA-256 hash with a prefix of a specified number of zeroes (difficulty).
-     *
-     * @param data The input data string to be hashed with the nonce.
-     * @param difficulty The number of leading zeroes required in the hash.
-     * @param numWorkers The number of worker coroutines to use for mining. Defaults to the number of available processors.
-     * @return A pair containing the nonce and the resulting hash that meets the difficulty requirement.
-     */
-    suspend fun mineNonce(
-        data: String,
-        difficulty: Int,
-        numWorkers: Int = Runtime.getRuntime().availableProcessors()
-    ): Pair<Int, String> {
-        val targetPrefix = "0".repeat(difficulty)
-        val channel = Channel<Pair<Int, String>>()
-        coroutineScope {
-            repeat(numWorkers) { workerId ->
-                launch(Dispatchers.Default) {
-                    var nonce = workerId
-                    while (true) {
-                        val combined = "$data$nonce"
-                        val hash = hashString(combined)
-                        if (hash.startsWith(targetPrefix)) {
-                            channel.send(Pair(nonce, hash)) // Send result to main thread
-                            return@launch // Stop this coroutine
-                        }
-                        nonce += numWorkers
-                    }
-                }
-            }
-        }
-        return channel.receive()
-    }
-
-    private fun hashString(input: String): String {
-        val bytes = MessageDigest.getInstance("SHA-256").digest(input.toByteArray())
-        return bytes.joinToString("") { "%02x".format(it) }
-    }
-
     companion object {
         fun toModel(entity: LedgerRecordEntity, detached: Boolean = true): PointLedgerRecordModel {
             val model = PointLedgerRecordModel(
                 id = UUID.fromString(entity.id),
+                previousId = entity.previousId?.let { UUID.fromString(it) },
                 userId = UUID.fromString(entity.userId),
                 payerAccountId = entity.payerAccountId,
                 payeeAccountId = entity.payeeAccountId,
@@ -124,6 +78,7 @@ class PointsLedgerRecordRepositoryImpl(
             } else {
                 return LedgerRecordEntity(
                     id = model.id.toString(),
+                    previousId = model.previousId?.toString(),
                     userId = model.userId.toString(),
                     payerAccountId = model.payerAccountId,
                     payeeAccountId = model.payeeAccountId,
@@ -135,8 +90,8 @@ class PointsLedgerRecordRepositoryImpl(
                     balanceSnapshot = model.balanceSnapshot,
                     transactionStatus = model.transactionStatus,
                     metadata = JsonUtils.toJson(model.metadata),
-                    transactionNonce = 0,
-                    transactionHash = "",
+                    transactionNonce = model.transactionNonce,
+                    transactionHash = model.transactionHash,
                     createdAt = LocalDateTime.now(),
                 )
             }
