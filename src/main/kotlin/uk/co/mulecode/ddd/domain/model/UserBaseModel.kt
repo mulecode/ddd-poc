@@ -1,6 +1,5 @@
 package uk.co.mulecode.ddd.domain.model
 
-import uk.co.mulecode.ddd.domain.events.DomainEvent
 import uk.co.mulecode.ddd.domain.events.UserActivatedEvent
 import java.util.UUID
 
@@ -16,23 +15,13 @@ interface User {
     var status: UserStatus
 }
 
-class UserModel(
+class UserBaseModel(
     val data: User,
-) {
-
-    private val domainEvents = mutableListOf<DomainEvent>()
-
-    fun domainEvents(): List<DomainEvent> {
-        return domainEvents.toList()
-    }
-
-    fun clearDomainEvents() {
-        domainEvents.clear()
-    }
+) : BaseModel() {
 
     fun activateUser() {
         data.status = UserStatus.ACTIVE
-        domainEvents.add(UserActivatedEvent(this))
+        addEvent(UserActivatedEvent(this))
     }
 
 }

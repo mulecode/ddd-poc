@@ -1,11 +1,11 @@
 package uk.co.mulecode.ddd.domain.events
 
-import uk.co.mulecode.ddd.domain.model.UserModel
+import uk.co.mulecode.ddd.domain.model.UserBaseModel
 
 class UserCreatedEvent(
-    val user: UserModel
+    val user: UserBaseModel
 ) : DomainEvent()
 
 class UserActivatedEvent(
-    val user: UserModel
+    val user: UserBaseModel
 ) : DomainEvent()

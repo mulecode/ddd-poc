@@ -5,7 +5,7 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
-import uk.co.mulecode.ddd.domain.model.UserModel
+import uk.co.mulecode.ddd.domain.model.UserBaseModel
 import uk.co.mulecode.ddd.domain.model.UserStatus
 import uk.co.mulecode.ddd.domain.repository.UserRepository
 import uk.co.mulecode.ddd.infrastructure.repository.jpa.JpaUserRepository
@@ -23,9 +23,9 @@ class UserRepositoryImpl(
     private val log = KotlinLogging.logger {}
 
     @Transactional
-    override fun create(name: String, email: String): UserModel {
+    override fun create(name: String, email: String): UserBaseModel {
         log.info { "Creating new user" }
-        return UserModel(
+        return UserBaseModel(
             jpaUserRepository.save(
                 UserEntity(
                     id = randomUUID(),
@@ -38,15 +38,15 @@ class UserRepositoryImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun findById(userId: UUID): UserModel {
+    override fun findById(userId: UUID): UserBaseModel {
         log.info { "Repository: Loading user $userId" }
         return jpaUserRepository.findByIdOrNull(userId)
-            ?.let { UserModel(it) }
+            ?.let { UserBaseModel(it) }
             ?: throw IllegalArgumentException("User not found for id $userId")
     }
 
     @Transactional
-    override fun save(userModel: UserModel): UserModel {
+    override fun save(userModel: UserBaseModel): UserBaseModel {
         log.info { "Saving user: ${userModel.data.id}" }
         val entity = jpaUserRepository.save(userModel.data as UserEntity)
         log.info { "User saved: ${entity.id}" }
@@ -58,10 +58,10 @@ class UserRepositoryImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun findAll(): List<UserModel> {
+    override fun findAll(): List<UserBaseModel> {
         log.info { "Repository: Getting all users ${Thread.currentThread().name}" }
         return jpaUserRepository.findAll()
-            .map { UserModel(it) }
+            .map { UserBaseModel(it) }
     }
 
 }

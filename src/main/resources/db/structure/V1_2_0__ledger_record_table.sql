@@ -24,8 +24,8 @@ CREATE TABLE ledger
 
     version               INTEGER      DEFAULT 0,
 
-    CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (id),
-    CONSTRAINT fk_prev_id FOREIGN KEY (previous_id) REFERENCES ledger (id)
+    CONSTRAINT fk_ledger_rec_user FOREIGN KEY (user_id) REFERENCES user (id),
+    CONSTRAINT fk_ledger_rec_prev_id FOREIGN KEY (previous_id) REFERENCES ledger (id)
 );
 
 CREATE INDEX idx_user_id ON ledger (user_id);

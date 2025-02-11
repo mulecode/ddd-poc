@@ -1,4 +1,4 @@
-CREATE TABLE users
+CREATE TABLE user
 (
     id      BINARY(16) PRIMARY KEY UNIQUE,
     name    VARCHAR(100) NOT NULL,

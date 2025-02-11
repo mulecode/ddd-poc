@@ -7,29 +7,33 @@ import jakarta.persistence.Enumerated
 import jakarta.persistence.Id
 import jakarta.persistence.Table
 import jakarta.persistence.Version
-import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
-import uk.co.mulecode.ddd.domain.model.User
-import uk.co.mulecode.ddd.domain.model.UserStatus
-import java.util.*
+import uk.co.mulecode.ddd.domain.model.LedgerAccount
+import uk.co.mulecode.ddd.domain.model.LedgerAccountStatus
+import uk.co.mulecode.ddd.domain.model.LedgerAccountType
+import java.util.UUID
 
 @Entity
-@Table(name = "user")
-class UserEntity(
+@Table(name = "ledger_account")
+class LedgerAccountEntity(
     @Id
     @Column(name = "id", updatable = false, nullable = false)
     override val id: UUID,
+    @NotNull
+    override val userId: UUID,
     @NotBlank
     @Size(min = 5, max = 50)
     override var name: String,
     @NotBlank
-    @Email
-    @Size(min = 5, max = 50)
-    override var email: String,
+    @Size(min = 5, max = 254)
+    override var description: String,
     @Enumerated(EnumType.STRING)
-    override var status: UserStatus,
+    override var status: LedgerAccountStatus,
+    @Enumerated(EnumType.STRING)
+    override var accountType: LedgerAccountType,
     @Version
     @Column(nullable = false)
     val version: Int = 0,
-): User
+): LedgerAccount
