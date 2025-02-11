@@ -2,7 +2,7 @@ CREATE TABLE ledger
 (
     id                    VARCHAR(36) PRIMARY KEY UNIQUE,
     previous_id           VARCHAR(36)  DEFAULT NULL,
-    user_id               VARCHAR(36)    NOT NULL,
+    user_id               BINARY(16)    NOT NULL,
     payer_account_id      VARCHAR(100) DEFAULT NULL,
     payee_account_id      VARCHAR(100) DEFAULT NULL,
     linked_transaction_id VARCHAR(36)  DEFAULT NULL,

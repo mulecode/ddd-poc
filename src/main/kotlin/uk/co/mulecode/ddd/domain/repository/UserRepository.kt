@@ -4,8 +4,8 @@ import uk.co.mulecode.ddd.domain.model.UserModel
 import java.util.*
 
 interface UserRepository {
-    fun loadUser(userId: UUID): UserModel
-    fun registerUser(userModel: UserModel): UserModel
-    fun updateUser(userModel: UserModel): UserModel
-    fun getAllUsers(): List<UserModel>
+    fun create(name: String, email: String): UserModel
+    fun findById(userId: UUID): UserModel
+    fun save(userModel: UserModel): UserModel
+    fun findAll(): List<UserModel>
 }

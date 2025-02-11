@@ -10,6 +10,7 @@ import jakarta.persistence.Version
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
+import uk.co.mulecode.ddd.domain.model.User
 import uk.co.mulecode.ddd.domain.model.UserStatus
 import java.util.*
 
@@ -18,17 +19,17 @@ import java.util.*
 class UserEntity(
     @Id
     @Column(name = "id", updatable = false, nullable = false)
-    val id: String,
+    override val id: UUID,
     @NotBlank
     @Size(min = 5, max = 50)
-    var name: String,
+    override var name: String,
     @NotBlank
     @Email
     @Size(min = 5, max = 50)
-    var email: String,
+    override var email: String,
     @Enumerated(EnumType.STRING)
-    var status: UserStatus,
+    override var status: UserStatus,
     @Version
     @Column(nullable = false)
     val version: Int = 0,
-)
+): User

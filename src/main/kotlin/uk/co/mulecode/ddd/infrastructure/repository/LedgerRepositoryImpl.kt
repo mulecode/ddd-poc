@@ -33,7 +33,7 @@ class LedgerRepositoryImpl(
         log.info { "Getting balance for user $userId" }
         return toModel(
             requireNotNull(
-                jpaLedgerRepository.findFirstByUserIdOrderByCreatedAtDesc(userId.toString())
+                jpaLedgerRepository.findFirstByUserIdOrderByCreatedAtDesc(userId)
             ) { "No points ledger record found for user: $userId" }
         )
     }
@@ -41,7 +41,7 @@ class LedgerRepositoryImpl(
     @Transactional(readOnly = true)
     override fun getHistory(userId: UUID, page: Int, batch: Int): List<PointLedgerRecordModel> {
         val pageable = PageRequest.of(page, batch)
-        return jpaLedgerRepository.findAllByUserIdOrderByCreatedAtDesc(userId.toString(), pageable)
+        return jpaLedgerRepository.findAllByUserIdOrderByCreatedAtDesc(userId, pageable)
             .content.map { toModel(it) }
     }
 
@@ -50,7 +50,7 @@ class LedgerRepositoryImpl(
             val model = PointLedgerRecordModel(
                 id = UUID.fromString(entity.id),
                 previousId = entity.previousId?.let { UUID.fromString(it) },
-                userId = UUID.fromString(entity.userId),
+                userId = entity.userId,
                 payerAccountId = entity.payerAccountId,
                 payeeAccountId = entity.payeeAccountId,
                 linkedTransactionId = entity.linkedTransactionId?.let { UUID.fromString(it) },
@@ -79,7 +79,7 @@ class LedgerRepositoryImpl(
                 return LedgerRecordEntity(
                     id = model.id.toString(),
                     previousId = model.previousId?.toString(),
-                    userId = model.userId.toString(),
+                    userId = model.userId,
                     payerAccountId = model.payerAccountId,
                     payeeAccountId = model.payeeAccountId,
                     linkedTransactionId = model.linkedTransactionId?.toString(),

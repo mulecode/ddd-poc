@@ -15,9 +15,9 @@ data class UserDto(
         @JvmStatic
         fun fromModel(userModel: UserModel): UserDto {
             return UserDto(
-                id = userModel.id,
-                name = userModel.name,
-                email = userModel.email
+                id = userModel.data.id,
+                name = userModel.data.name,
+                email = userModel.data.email
             )
         }
     }

@@ -12,6 +12,7 @@ import uk.co.mulecode.ddd.domain.model.TransactionStatus
 import uk.co.mulecode.ddd.domain.model.TransactionType
 import java.math.BigDecimal
 import java.time.LocalDateTime
+import java.util.UUID
 
 
 @Entity
@@ -24,7 +25,7 @@ class LedgerRecordEntity(
     @Column(name = "previous_id", updatable = false, nullable = true)
     val previousId: String?,
     @Column(name = "user_id", updatable = false, nullable = false)
-    val userId: String,
+    val userId: UUID,
     @Column(nullable = true)
     val payerAccountId: String?,
     @Column(nullable = true)
