@@ -17,7 +17,7 @@ import java.util.UUID
 
 @Entity
 @Table(name = "ledger_account")
-class LedgerAccountEntity(
+class JpaLedgerAccountEntity(
     @Id
     @Column(name = "id", updatable = false, nullable = false)
     override val id: UUID,

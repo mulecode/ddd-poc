@@ -9,7 +9,7 @@ import uk.co.mulecode.ddd.domain.model.UserBaseModel
 import uk.co.mulecode.ddd.domain.model.UserStatus
 import uk.co.mulecode.ddd.domain.repository.UserRepository
 import uk.co.mulecode.ddd.infrastructure.repository.jpa.JpaUserRepository
-import uk.co.mulecode.ddd.infrastructure.repository.jpa.UserEntity
+import uk.co.mulecode.ddd.infrastructure.repository.jpa.JpaUserEntity
 import java.util.UUID
 import java.util.UUID.randomUUID
 
@@ -27,7 +27,7 @@ class UserRepositoryImpl(
         log.info { "Creating new user" }
         return UserBaseModel(
             jpaUserRepository.save(
-                UserEntity(
+                JpaUserEntity(
                     id = randomUUID(),
                     name = name,
                     email = email,
@@ -48,7 +48,7 @@ class UserRepositoryImpl(
     @Transactional
     override fun save(userModel: UserBaseModel): UserBaseModel {
         log.info { "Saving user: ${userModel.data.id}" }
-        val entity = jpaUserRepository.save(userModel.data as UserEntity)
+        val entity = jpaUserRepository.save(userModel.data as JpaUserEntity)
         log.info { "User saved: ${entity.id}" }
         userModel.domainEvents().forEach {
             eventPublisher.publishEvent(it)

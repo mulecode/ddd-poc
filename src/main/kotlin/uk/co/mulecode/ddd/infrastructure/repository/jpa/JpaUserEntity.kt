@@ -16,7 +16,7 @@ import java.util.*
 
 @Entity
 @Table(name = "user")
-class UserEntity(
+class JpaUserEntity(
     @Id
     @Column(name = "id", updatable = false, nullable = false)
     override val id: UUID,

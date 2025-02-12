@@ -1,11 +1,16 @@
 package uk.co.mulecode.ddd.application.dto
 
+import jakarta.validation.constraints.DecimalMax
+import jakarta.validation.constraints.DecimalMin
+import jakarta.validation.constraints.Digits
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 import uk.co.mulecode.ddd.domain.model.LedgerAccountModel
 import uk.co.mulecode.ddd.domain.model.LedgerAccountStatus
 import uk.co.mulecode.ddd.domain.model.LedgerAccountType
+import uk.co.mulecode.ddd.domain.model.TransactionType
+import java.math.BigDecimal
 import java.util.UUID
 
 data class LedgerAccountDto(
@@ -13,7 +18,7 @@ data class LedgerAccountDto(
     val name: String,
     val description: String,
     val type: LedgerAccountType,
-    var status: LedgerAccountStatus
+    val status: LedgerAccountStatus,
 ) {
     companion object {
         @JvmStatic
@@ -29,15 +34,55 @@ data class LedgerAccountDto(
     }
 }
 
+data class LedgerAccountDetailsDto(
+    val id: UUID,
+    val name: String,
+    val description: String,
+    val type: LedgerAccountType,
+    val status: LedgerAccountStatus,
+    val balance: BigDecimal
+) {
+    companion object {
+        @JvmStatic
+        fun fromModel(ledgerAccountModel: LedgerAccountModel): LedgerAccountDetailsDto {
+            return LedgerAccountDetailsDto(
+                id = ledgerAccountModel.data.id,
+                name = ledgerAccountModel.data.name,
+                description = ledgerAccountModel.data.description,
+                type = ledgerAccountModel.data.accountType,
+                status = ledgerAccountModel.data.status,
+                balance = ledgerAccountModel.balance()
+            )
+        }
+    }
+}
+
 data class LedgerAccountCreationDto(
     @field:NotNull(message = "User ID is required")
     val userId: UUID,
+
     @field:NotNull(message = "Type is required")
     val type: LedgerAccountType,
+
     @field:NotBlank(message = "Name is required")
     @field:Size(min = 5, max = 50, message = "Name must be between 5 and 50 characters")
     val name: String,
+
     @field:NotBlank(message = "Description is required")
     @field:Size(min = 5, max = 254, message = "Description must be between 5 and 254 characters")
     val description: String
+)
+
+data class LedgerAccountTransactionCreationDto(
+    @field:NotBlank(message = "ReferenceId is required")
+    @field:Size(min = 5, max = 50, message = "ReferenceId must be between 5 and 50 characters")
+    val referenceId: String,
+
+    @field:DecimalMin(value = "0", inclusive = true) // Prevents negative values
+    @field:DecimalMax(value = "9999999.99", inclusive = true) // Upper limit
+    @field:Digits(integer = 10, fraction = 2) // Max 10 digits before decimal, 2 after
+    val amount: BigDecimal,
+
+    @field:NotNull(message = "TransactionType is required")
+    val transactionType: TransactionType,
 )

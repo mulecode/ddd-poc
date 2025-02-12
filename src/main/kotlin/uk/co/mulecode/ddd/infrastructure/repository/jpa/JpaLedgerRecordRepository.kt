@@ -5,5 +5,9 @@ import org.springframework.stereotype.Repository
 import java.util.UUID
 
 @Repository
-interface JpaUserRepository : JpaRepository<JpaUserEntity, UUID> {
+interface JpaLedgerRecordRepository : JpaRepository<JpaLedgerRecordEntity, UUID> {
+
+    fun findFirstByPayerAccountId(accountId: UUID): JpaLedgerRecordEntity
 }
+
+

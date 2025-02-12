@@ -5,5 +5,5 @@ import org.springframework.stereotype.Repository
 import java.util.UUID
 
 @Repository
-interface JpaLedgerAccountRepository : JpaRepository<LedgerAccountEntity, UUID> {
+interface JpaLedgerAccountRepository : JpaRepository<JpaLedgerAccountEntity, UUID> {
 }
