@@ -6,7 +6,6 @@ import jakarta.persistence.EnumType
 import jakarta.persistence.Enumerated
 import jakarta.persistence.Id
 import jakarta.persistence.Table
-import jakarta.persistence.Version
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
@@ -33,7 +32,4 @@ class JpaLedgerAccountEntity(
     override var status: LedgerAccountStatus,
     @Enumerated(EnumType.STRING)
     override var accountType: LedgerAccountType,
-    @Version
-    @Column(nullable = false)
-    val version: Int = 0,
-): LedgerAccount
+) : LedgerAccount, JpaAuditingBase()

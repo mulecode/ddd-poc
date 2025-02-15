@@ -10,8 +10,8 @@ import uk.co.mulecode.ddd.domain.model.UserStatus
 import uk.co.mulecode.ddd.domain.repository.UserRepository
 import uk.co.mulecode.ddd.infrastructure.repository.jpa.JpaUserRepository
 import uk.co.mulecode.ddd.infrastructure.repository.jpa.JpaUserEntity
+import uk.co.mulecode.ddd.infrastructure.utils.IdentificationGenerator.Companion.sortedUuid
 import java.util.UUID
-import java.util.UUID.randomUUID
 
 
 @Component
@@ -28,7 +28,7 @@ class UserRepositoryImpl(
         return UserBaseModel(
             jpaUserRepository.save(
                 JpaUserEntity(
-                    id = randomUUID(),
+                    id = sortedUuid(),
                     name = name,
                     email = email,
                     status = UserStatus.INACTIVE

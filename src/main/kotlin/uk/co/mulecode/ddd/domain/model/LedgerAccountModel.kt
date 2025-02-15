@@ -44,8 +44,8 @@ class LedgerAccountModel(
         return prospectRecords.toList()
     }
 
-    // The Current balance is the balance of the last record
-    private var currentBalance = lastRecord?.balanceSnapshot
+    // The Current balance is the balance of the last record or 0 if there is no record
+    private var currentBalance = lastRecord?.balanceSnapshot ?: BigDecimal.ZERO
 
     fun activate() {
         data.status = LedgerAccountStatus.ACTIVE
@@ -85,7 +85,10 @@ class LedgerAccountModel(
             referenceId = referenceId,
             transactionType = transactionType,
             transactionCategory = TransactionCategory.STANDARD,
-            balanceSnapshot = currentBalance!!
+            balanceSnapshot = currentBalance!!,
+            verificationSignature = "",
+            verificationCode = 0,
+            verificationStatus = VerificationStatus.PENDING
         )
         prospectRecords.add(newRecord)
         addEvent(LedgerAccountTransactionCreatedEvent(newRecord))

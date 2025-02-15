@@ -7,7 +7,7 @@ import java.util.UUID
 @Repository
 interface JpaLedgerRecordRepository : JpaRepository<JpaLedgerRecordEntity, UUID> {
 
-    fun findFirstByPayerAccountId(accountId: UUID): JpaLedgerRecordEntity
+    fun findTopByPayerAccountIdOrderByIdDesc(accountId: UUID): JpaLedgerRecordEntity
 }
 
 

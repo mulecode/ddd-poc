@@ -8,23 +8,23 @@ import org.springframework.transaction.annotation.Transactional
 import uk.co.mulecode.ddd.domain.model.LedgerAccountModel
 import uk.co.mulecode.ddd.domain.model.LedgerAccountStatus
 import uk.co.mulecode.ddd.domain.model.LedgerAccountType
-import uk.co.mulecode.ddd.domain.model.TransactionCategory
-import uk.co.mulecode.ddd.domain.model.TransactionType
+import uk.co.mulecode.ddd.domain.model.VerificationStatus
 import uk.co.mulecode.ddd.domain.repository.LedgerAccountRepository
 import uk.co.mulecode.ddd.infrastructure.repository.jpa.JpaLedgerAccountEntity
 import uk.co.mulecode.ddd.infrastructure.repository.jpa.JpaLedgerAccountRepository
 import uk.co.mulecode.ddd.infrastructure.repository.jpa.JpaLedgerRecordEntity
 import uk.co.mulecode.ddd.infrastructure.repository.jpa.JpaLedgerRecordRepository
-import java.math.BigDecimal
+import uk.co.mulecode.ddd.infrastructure.service.VerificationService
+import uk.co.mulecode.ddd.infrastructure.utils.IdentificationGenerator.Companion.sortedUuid
 import java.util.UUID
-import java.util.UUID.randomUUID
 
 
 @Component
 class LedgerAccountRepositoryImpl(
     private val eventPublisher: ApplicationEventPublisher,
     private val jpaLedgerAccountRepository: JpaLedgerAccountRepository,
-    private val jpaLedgerRecordRepository: JpaLedgerRecordRepository
+    private val jpaLedgerRecordRepository: JpaLedgerRecordRepository,
+    private val verificationService: VerificationService
 ) : LedgerAccountRepository {
 
     private val log = KotlinLogging.logger {}
@@ -39,7 +39,7 @@ class LedgerAccountRepositoryImpl(
         log.info { "Creating new ledger account" }
         val account = jpaLedgerAccountRepository.save(
             JpaLedgerAccountEntity(
-                id = randomUUID(),
+                id = sortedUuid(),
                 userId = userId,
                 accountType = type,
                 name = name,
@@ -47,21 +47,8 @@ class LedgerAccountRepositoryImpl(
                 status = LedgerAccountStatus.INACTIVE
             )
         )
-        val initialRecord = jpaLedgerRecordRepository.save(
-            JpaLedgerRecordEntity(
-                id = randomUUID(),
-                payerAccountId = account.id,
-                payeeAccountId = account.id,
-                amount = BigDecimal.ZERO,
-                transactionType = TransactionType.DEBIT,
-                transactionCategory = TransactionCategory.STANDARD,
-                referenceId = "Account opening",
-                balanceSnapshot = BigDecimal.ZERO,
-            )
-        )
         return LedgerAccountModel(
             data = account,
-            lastRecord = initialRecord
         )
     }
 
@@ -72,7 +59,7 @@ class LedgerAccountRepositoryImpl(
         val account = jpaLedgerAccountRepository.findByIdOrNull(id)
             ?: throw IllegalArgumentException("Ledger Account not found for id $id")
 
-        val lastRecord = jpaLedgerRecordRepository.findFirstByPayerAccountId(account.id)
+        val lastRecord = jpaLedgerRecordRepository.findTopByPayerAccountIdOrderByIdDesc(account.id)
 
         return LedgerAccountModel(
             data = account,
@@ -85,20 +72,33 @@ class LedgerAccountRepositoryImpl(
         log.debug { "Saving LedgerAccountModel: ${model.data.id}" }
         val entity = jpaLedgerAccountRepository.save(model.data as JpaLedgerAccountEntity)
         log.debug { "LedgerAccountModel saved: ${entity.id}" }
+
+        var lastVerificationSignature = model.lastRecord?.verificationSignature ?: ""
+
         model.getProspectRecords().forEach {
             log.debug { "Saving LedgerRecord: ${it.id}" }
+
+            val verification = verificationService.create(
+                previousSignature = lastVerificationSignature,
+                data = it.rawSignature()
+            )
             jpaLedgerRecordRepository.save(
                 JpaLedgerRecordEntity(
-                    id = it.id,
+                    id = sortedUuid(),
                     payerAccountId = it.payerAccountId,
                     payeeAccountId = it.payeeAccountId,
                     amount = it.amount,
                     transactionType = it.transactionType,
                     transactionCategory = it.transactionCategory,
                     referenceId = it.referenceId,
-                    balanceSnapshot = it.balanceSnapshot
+                    balanceSnapshot = it.balanceSnapshot,
+                    verificationStatus = VerificationStatus.VERIFIED,
+                    verificationCode = verification.verificationCode,
+                    verificationSignature = verification.verificationSignature
                 )
-            )
+            ).let { savedRecord ->
+                lastVerificationSignature = savedRecord.verificationSignature
+            }
         }
         model.domainEvents().forEach {
             eventPublisher.publishEvent(it)

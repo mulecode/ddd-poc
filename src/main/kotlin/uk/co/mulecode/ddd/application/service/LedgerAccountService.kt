@@ -8,6 +8,7 @@ import uk.co.mulecode.ddd.application.dto.LedgerAccountDto
 import uk.co.mulecode.ddd.application.dto.LedgerAccountTransactionCreationDto
 import uk.co.mulecode.ddd.domain.model.TransactionType
 import uk.co.mulecode.ddd.domain.repository.LedgerAccountRepository
+import java.math.BigDecimal
 import java.util.UUID
 
 @Service
@@ -24,6 +25,8 @@ class LedgerAccountService(
             description = request.description
         )
         account.activate()
+        account.debit(BigDecimal.ZERO, "Initial balance")
+        account.debit(BigDecimal("50"), "Bonus new account")
         return ledgerAccountRepository.save(account)
             .let { LedgerAccountDto.fromModel(it) }
     }

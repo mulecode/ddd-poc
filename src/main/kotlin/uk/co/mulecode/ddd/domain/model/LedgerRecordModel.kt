@@ -4,7 +4,7 @@ import java.math.BigDecimal
 import java.util.UUID
 
 
-interface LedgerRecord {
+interface LedgerRecord : VerificationVo {
     val id: UUID
     val payerAccountId: UUID
     val payeeAccountId: UUID
@@ -13,6 +13,19 @@ interface LedgerRecord {
     val transactionType: TransactionType
     val transactionCategory: TransactionCategory
     val balanceSnapshot: BigDecimal
+
+    fun rawSignature(): String {
+        return """
+            |$id|
+            |$payerAccountId|
+            |$payeeAccountId|
+            |$referenceId|
+            |$amount|
+            |$transactionType|
+            |$transactionCategory|
+            |$balanceSnapshot|
+        """.trimIndent()
+    }
 }
 
 class LedgerRecordModel(
@@ -29,5 +42,8 @@ data class LedgerProspectRecord(
     override val amount: BigDecimal,
     override val transactionType: TransactionType,
     override val transactionCategory: TransactionCategory,
-    override val balanceSnapshot: BigDecimal
+    override val balanceSnapshot: BigDecimal,
+    override val verificationSignature: String,
+    override val verificationCode: Int,
+    override val verificationStatus: VerificationStatus,
 ) : LedgerRecord

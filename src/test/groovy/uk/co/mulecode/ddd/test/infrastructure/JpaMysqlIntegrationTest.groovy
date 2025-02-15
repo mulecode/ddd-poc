@@ -8,7 +8,7 @@ import java.sql.Connection
 
 class JpaMysqlIntegrationTest extends IntegrationTest {
 
-    private static final int TOTAL_TABLES = 3
+    private static final int TOTAL_TABLES = 4
 
     @Autowired
     private DataSource dataSource

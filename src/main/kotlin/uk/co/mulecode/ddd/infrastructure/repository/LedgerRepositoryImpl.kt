@@ -11,7 +11,7 @@ import uk.co.mulecode.ddd.domain.repository.LedgerRepository
 import uk.co.mulecode.ddd.infrastructure.repository.jpa.JpaLedgerRepository
 import uk.co.mulecode.ddd.infrastructure.repository.jpa.LedgerRecordEntity
 import java.time.LocalDateTime
-import java.util.*
+import java.util.UUID
 
 private const val AGGREGATE_ROOT_NAME = "entity"
 
