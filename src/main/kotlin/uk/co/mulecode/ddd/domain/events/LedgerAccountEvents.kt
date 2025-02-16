@@ -1,7 +1,7 @@
 package uk.co.mulecode.ddd.domain.events
 
 import uk.co.mulecode.ddd.domain.model.LedgerAccountModel
-import uk.co.mulecode.ddd.domain.model.LedgerProspectRecord
+import uk.co.mulecode.ddd.domain.model.LedgerCoreRecord
 
 class LedgerAccountCreatedEvent(
     val data: LedgerAccountModel
@@ -12,5 +12,5 @@ class LedgerAccountActivatedEvent(
 ) : DomainEvent()
 
 class LedgerAccountTransactionCreatedEvent(
-    val data: LedgerProspectRecord
+    val data: LedgerCoreRecord
 ) : DomainEvent()

@@ -9,9 +9,9 @@ import java.util.UUID
 @Repository
 interface JpaLedgerRecordRepository : JpaRepository<JpaLedgerRecordEntity, UUID> {
 
-    fun findTopByPayerAccountIdOrderByIdDesc(accountId: UUID): JpaLedgerRecordEntity
+    fun findTopByPayerAccountIdOrderByCreatedDateDesc(accountId: UUID): JpaLedgerRecordEntity
 
-    fun findAllByPayerAccountIdOrderByIdDesc(accountId: UUID, page: Pageable): Page<JpaLedgerRecordEntity>
+    fun findAllByPayerAccountIdOrderByCreatedDateDesc(accountId: UUID, page: Pageable): Page<JpaLedgerRecordEntity>
 }
 
 

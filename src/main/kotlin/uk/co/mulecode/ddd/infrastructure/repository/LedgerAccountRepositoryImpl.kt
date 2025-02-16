@@ -10,8 +10,6 @@ import uk.co.mulecode.ddd.domain.model.LedgerAccountModel
 import uk.co.mulecode.ddd.domain.model.LedgerAccountStatus
 import uk.co.mulecode.ddd.domain.model.LedgerAccountType
 import uk.co.mulecode.ddd.domain.model.LedgerRecordModel
-import uk.co.mulecode.ddd.domain.model.VerificationModel
-import uk.co.mulecode.ddd.domain.model.VerificationStatus
 import uk.co.mulecode.ddd.domain.repository.LedgerAccountRepository
 import uk.co.mulecode.ddd.infrastructure.repository.jpa.JpaLedgerAccountEntity
 import uk.co.mulecode.ddd.infrastructure.repository.jpa.JpaLedgerAccountRepository
@@ -60,12 +58,12 @@ class LedgerAccountRepositoryImpl(
         val account = jpaLedgerAccountRepository.findByIdOrNull(id)
             ?: throw IllegalArgumentException("Ledger Account not found for id $id")
 
-        val lastRecord = jpaLedgerRecordRepository.findTopByPayerAccountIdOrderByIdDesc(account.id)
+        val lastRecord = jpaLedgerRecordRepository.findTopByPayerAccountIdOrderByCreatedDateDesc(account.id)
 
         val history = historySize
             ?.takeIf { it > 0 }
             ?.let {
-                jpaLedgerRecordRepository.findAllByPayerAccountIdOrderByIdDesc(
+                jpaLedgerRecordRepository.findAllByPayerAccountIdOrderByCreatedDateDesc(
                     accountId = account.id, page = Pageable.ofSize(it)
                 )
             }
@@ -78,8 +76,12 @@ class LedgerAccountRepositoryImpl(
                     ?: throw IllegalStateException("Ledger Record does not have a creation date")
             ),
             history = history?.content
-                ?.sortedByDescending { it.createdDate }
-                ?.zipWithNext { current, previous ->
+                ?.sortedBy { it.createdDate }
+                ?.zipWithNext { previous, current ->
+                    log.debug { "--> Prev: ${previous.id} current: ${current.id}" }
+
+                    log.debug { "previous: ${previous.verificationSignature}" }
+
                     LedgerRecordModel(
                         data = current,
                         previousSignature = previous.verificationSignature,
@@ -95,18 +97,11 @@ class LedgerAccountRepositoryImpl(
         log.debug { "Saving LedgerAccountModel: ${model.data.id}" }
         val entity = jpaLedgerAccountRepository.save(model.data as JpaLedgerAccountEntity)
         log.debug { "LedgerAccountModel saved: ${entity.id}" }
-
-        var lastVerificationSignature = model.lastRecord?.data?.verificationSignature ?: ""
-
         model.getProspectRecords().forEach {
             log.debug { "Saving LedgerRecord: ${it.id}" }
-
-            val verification = VerificationModel(previousSignature = lastVerificationSignature)
-            verification.create(data = it.rawSignature())
-
             jpaLedgerRecordRepository.save(
                 JpaLedgerRecordEntity(
-                    id = sortedUuid(),
+                    id = it.id,
                     payerAccountId = it.payerAccountId,
                     payeeAccountId = it.payeeAccountId,
                     amount = it.amount,
@@ -114,13 +109,11 @@ class LedgerAccountRepositoryImpl(
                     transactionCategory = it.transactionCategory,
                     referenceId = it.referenceId,
                     balanceSnapshot = it.balanceSnapshot,
-                    verificationStatus = VerificationStatus.VERIFIED,
-                    verificationCode = verification.verificationCode,
-                    verificationSignature = verification.verificationSignature
+                    verificationStatus = it.verificationStatus,
+                    verificationCode = it.verificationCode,
+                    verificationSignature = it.verificationSignature
                 )
-            ).let { savedRecord ->
-                lastVerificationSignature = savedRecord.verificationSignature
-            }
+            )
         }
         model.domainEvents().forEach {
             eventPublisher.publishEvent(it)

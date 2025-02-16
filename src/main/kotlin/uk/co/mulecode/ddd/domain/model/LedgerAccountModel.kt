@@ -2,6 +2,7 @@ package uk.co.mulecode.ddd.domain.model
 
 import uk.co.mulecode.ddd.domain.events.LedgerAccountActivatedEvent
 import uk.co.mulecode.ddd.domain.events.LedgerAccountTransactionCreatedEvent
+import uk.co.mulecode.ddd.infrastructure.utils.IdentificationGenerator.Companion.sortedUuid
 import java.math.BigDecimal
 import java.util.UUID
 
@@ -39,15 +40,15 @@ class LedgerAccountModel(
 ) : BaseModel() {
 
     private var state: LedgerState = LedgerState.PRISTINE
-    private val prospectRecords = mutableListOf<LedgerProspectRecord>()
+    private val prospectRecords = mutableListOf<LedgerRecord>()
 
     init {
-        history.let { record -> record?.forEach {
+        history?.forEach {
             it.verify()
-        } }
+        }
     }
 
-    fun getProspectRecords(): List<LedgerProspectRecord> {
+    fun getProspectRecords(): List<LedgerRecord> {
         return prospectRecords.toList()
     }
 
@@ -84,8 +85,13 @@ class LedgerAccountModel(
     }
 
     private fun addTransaction(amount: BigDecimal, referenceId: String, transactionType: TransactionType) {
-        val newRecord = LedgerProspectRecord(
-            id = UUID.randomUUID(),
+
+        val verification = VerificationModel(
+            previousSignature = lastRecord?.previousSignature?: "",
+        )
+
+        val newRecord = LedgerRecordProspect(
+            id = sortedUuid(),
             payerAccountId = data.id,
             payeeAccountId = data.id,
             amount = amount,
@@ -97,6 +103,11 @@ class LedgerAccountModel(
             verificationCode = 0,
             verificationStatus = VerificationStatus.PENDING
         )
+        verification.create(data = newRecord.rawSignature())
+        newRecord.verificationCode = verification.verificationCode
+        newRecord.verificationSignature = verification.verificationSignature
+        newRecord.verificationStatus = verification.verificationStatus
+
         prospectRecords.add(newRecord)
         addEvent(LedgerAccountTransactionCreatedEvent(newRecord))
     }

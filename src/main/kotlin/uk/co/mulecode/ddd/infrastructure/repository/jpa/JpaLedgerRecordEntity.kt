@@ -41,6 +41,4 @@ class JpaLedgerRecordEntity(
     @Column(updatable = false, nullable = false)
     @Enumerated(EnumType.STRING)
     override val verificationStatus: VerificationStatus,
-) : LedgerRecord, JpaAuditingBase() {
-
-}
+) : LedgerRecord, JpaAuditingBase()

@@ -7,7 +7,8 @@ class IdentificationGenerator {
     companion object {
         @JvmStatic
         fun sortedUuid(): UUID {
-            return UuidCreator.getTimeOrdered()
+            return UUID.randomUUID()
+//            return UuidCreator.getTimeOrdered()
         }
     }
 }

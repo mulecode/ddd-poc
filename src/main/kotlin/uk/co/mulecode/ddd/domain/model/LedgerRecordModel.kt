@@ -9,12 +9,6 @@ enum class TransactionType {
     CREDIT // Amount being deducted from the account
 }
 
-enum class TransactionStatus {
-    PROCESSED,
-    PENDING,
-    FAILED
-}
-
 enum class TransactionCategory {
     STANDARD,   // – A regular credit or debit transaction.
     REVERSAL,   // – A transaction that negates a previous one.
@@ -24,7 +18,7 @@ enum class TransactionCategory {
     ADJUSTMENT, // – A manual correction (if applicable).
 }
 
-interface LedgerRecord : VerificationVo {
+interface LedgerCoreRecord {
     val id: UUID
     val payerAccountId: UUID
     val payeeAccountId: UUID
@@ -48,6 +42,23 @@ interface LedgerRecord : VerificationVo {
     }
 }
 
+interface LedgerRecord : LedgerCoreRecord, VerificationDetails
+
+data class LedgerRecordProspect(
+    override val id: UUID,
+    override val payerAccountId: UUID,
+    override val payeeAccountId: UUID,
+    override val referenceId: String,
+    override val amount: BigDecimal,
+    override val transactionType: TransactionType,
+    override val transactionCategory: TransactionCategory,
+    override val balanceSnapshot: BigDecimal,
+    override var verificationSignature: String,
+    override var verificationCode: Int,
+    override var verificationStatus: VerificationStatus,
+) : LedgerRecord
+
+
 class LedgerRecordModel(
     val data: LedgerRecord,
     val previousSignature: String? = null,
@@ -57,27 +68,14 @@ class LedgerRecordModel(
     var status: VerificationStatus? = null
 
     fun verify() {
+        val raw = data.rawSignature()
         val verification = VerificationModel(previousSignature = previousSignature ?: "")
-        verification.create(data.rawSignature())
+        verification.create(raw)
         status = if (verification.verificationSignature == data.verificationSignature) {
             VerificationStatus.VERIFIED
         } else {
             VerificationStatus.FAILED
         }
     }
-
 }
 
-data class LedgerProspectRecord(
-    override val id: UUID,
-    override val payerAccountId: UUID,
-    override val payeeAccountId: UUID,
-    override val referenceId: String,
-    override val amount: BigDecimal,
-    override val transactionType: TransactionType,
-    override val transactionCategory: TransactionCategory,
-    override val balanceSnapshot: BigDecimal,
-    override val verificationSignature: String,
-    override val verificationCode: Int,
-    override val verificationStatus: VerificationStatus,
-) : LedgerRecord

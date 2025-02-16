@@ -48,6 +48,7 @@ data class LedgerAccountDetailsDto(
     companion object {
 
         data class Record(
+            val id: UUID,
             val date: LocalDateTime,
             val referenceId: String,
             val amount: BigDecimal,
@@ -69,6 +70,7 @@ data class LedgerAccountDetailsDto(
                 balance = ledgerAccountModel.balance(),
                 history = ledgerAccountModel.history?.map {
                     Record(
+                        id = it.data.id,
                         date = it.createdAt,
                         referenceId = it.data.referenceId,
                         amount = it.data.amount,
