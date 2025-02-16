@@ -26,6 +26,7 @@ class LedgerAccountService(
         )
         account.activate()
         account.debit(BigDecimal.ZERO, "Initial balance")
+        account.debit(BigDecimal("50"), "Bonus")
         return ledgerAccountRepository.save(account)
             .let { LedgerAccountDto.fromModel(it) }
     }

@@ -12,7 +12,7 @@ import uk.co.mulecode.ddd.domain.model.LedgerAccountType
 import uk.co.mulecode.ddd.domain.model.TransactionType
 import uk.co.mulecode.ddd.domain.model.VerificationStatus
 import java.math.BigDecimal
-import java.time.LocalDateTime
+import java.time.Instant
 import java.util.UUID
 
 data class LedgerAccountDto(
@@ -49,7 +49,7 @@ data class LedgerAccountDetailsDto(
 
         data class Record(
             val id: UUID,
-            val date: LocalDateTime,
+            val date: Instant,
             val referenceId: String,
             val amount: BigDecimal,
             val transactionType: TransactionType,

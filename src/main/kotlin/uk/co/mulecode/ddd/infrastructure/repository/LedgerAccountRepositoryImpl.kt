@@ -98,7 +98,7 @@ class LedgerAccountRepositoryImpl(
         val entity = jpaLedgerAccountRepository.save(model.data as JpaLedgerAccountEntity)
         log.debug { "LedgerAccountModel saved: ${entity.id}" }
         model.getProspectRecords().forEach {
-            log.debug { "Saving LedgerRecord: ${it.id}" }
+            log.debug { "Saving LedgerRecord: ${it.id} nonce: ${it.verificationCode} hash: ${it.verificationSignature} raw: ${it.rawSignature()}" }
             jpaLedgerRecordRepository.save(
                 JpaLedgerRecordEntity(
                     id = it.id,

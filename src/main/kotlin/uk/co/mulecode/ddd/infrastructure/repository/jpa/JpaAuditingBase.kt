@@ -9,7 +9,7 @@ import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedBy
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
-import java.time.LocalDateTime
+import java.time.Instant
 
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener::class)
@@ -21,7 +21,7 @@ abstract class JpaAuditingBase {
 
     @CreatedDate
     @Column(name = "created_date", nullable = false, updatable = false)
-    var createdDate: LocalDateTime? = null
+    var createdDate: Instant? = null
 
     @LastModifiedBy
     @Column(name = "last_modified_by", nullable = false, updatable = true)
@@ -29,7 +29,7 @@ abstract class JpaAuditingBase {
 
     @LastModifiedDate
     @Column(name = "last_modified_date", nullable = false, updatable = true)
-    var lastModifiedDate: LocalDateTime? = null
+    var lastModifiedDate: Instant? = null
 
     @Version
     @Column(name = "version", nullable = false, updatable = true)

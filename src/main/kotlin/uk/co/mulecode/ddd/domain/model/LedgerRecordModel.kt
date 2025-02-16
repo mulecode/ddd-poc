@@ -1,7 +1,9 @@
 package uk.co.mulecode.ddd.domain.model
 
+import io.github.oshai.kotlinlogging.KotlinLogging
 import java.math.BigDecimal
-import java.time.LocalDateTime
+import java.math.RoundingMode
+import java.time.Instant
 import java.util.UUID
 
 enum class TransactionType {
@@ -34,10 +36,10 @@ interface LedgerCoreRecord {
             |$payerAccountId|
             |$payeeAccountId|
             |$referenceId|
-            |$amount|
+            |${amount.setScale(2, RoundingMode.HALF_UP)}|
             |$transactionType|
             |$transactionCategory|
-            |$balanceSnapshot|
+            |${balanceSnapshot.setScale(2, RoundingMode.HALF_UP)}|
         """.trimIndent()
     }
 }
@@ -62,8 +64,10 @@ data class LedgerRecordProspect(
 class LedgerRecordModel(
     val data: LedgerRecord,
     val previousSignature: String? = null,
-    val createdAt: LocalDateTime
+    val createdAt: Instant
 ) : BaseModel() {
+
+    private val log = KotlinLogging.logger { }
 
     var status: VerificationStatus? = null
 
@@ -71,6 +75,9 @@ class LedgerRecordModel(
         val raw = data.rawSignature()
         val verification = VerificationModel(previousSignature = previousSignature ?: "")
         verification.create(raw)
+
+        log.debug { "Verifying record ${data.id} nonce: ${verification.verificationCode}, hash ${verification.verificationSignature} raw: $raw" }
+
         status = if (verification.verificationSignature == data.verificationSignature) {
             VerificationStatus.VERIFIED
         } else {

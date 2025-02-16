@@ -52,9 +52,6 @@ class LedgerAccountModel(
         return prospectRecords.toList()
     }
 
-    // The Current balance is the balance of the last record or 0 if there is no record
-    private var currentBalance = lastRecord?.data?.balanceSnapshot ?: BigDecimal.ZERO
-
     fun activate() {
         data.status = LedgerAccountStatus.ACTIVE
         addEvent(LedgerAccountActivatedEvent(this))
@@ -62,32 +59,42 @@ class LedgerAccountModel(
 
     fun balance(): BigDecimal {
         if (state == LedgerState.PRISTINE) {
-            return lastRecord?.data?.balanceSnapshot
-                ?: throw IllegalStateException("Invalid balance state")
+            return lastRecord?.data?.balanceSnapshot ?: BigDecimal.ZERO
         }
-        return currentBalance!!
+        return prospectRecords.last().balanceSnapshot
+    }
+
+    fun signature(): String {
+        if (state == LedgerState.PRISTINE) {
+            return lastRecord?.data?.verificationSignature ?: ""
+        }
+        return prospectRecords.last().verificationSignature
     }
 
     fun debit(amount: BigDecimal, referenceId: String) {
-        currentBalance = currentBalance?.plus(amount)
-        addTransaction(amount, referenceId, TransactionType.DEBIT)
+        val newBalance = balance().plus(amount)
+        addTransaction(amount, referenceId, newBalance, TransactionType.DEBIT)
         state = LedgerState.ALTERED
     }
 
     fun credit(amount: BigDecimal, referenceId: String) {
-        val balance = currentBalance?.minus(amount)
-        if (balance!! < BigDecimal.ZERO) {
+        val newBalance = balance().minus(amount)
+        if (newBalance < BigDecimal.ZERO) {
             throw IllegalStateException("Insufficient funds")
         }
-        currentBalance = balance
-        addTransaction(amount, referenceId, TransactionType.CREDIT)
+        addTransaction(amount, referenceId, newBalance, TransactionType.CREDIT)
         state = LedgerState.ALTERED
     }
 
-    private fun addTransaction(amount: BigDecimal, referenceId: String, transactionType: TransactionType) {
+    private fun addTransaction(
+        amount: BigDecimal,
+        referenceId: String,
+        newBalance: BigDecimal,
+        transactionType: TransactionType
+    ) {
 
         val verification = VerificationModel(
-            previousSignature = lastRecord?.previousSignature?: "",
+            previousSignature = signature(),
         )
 
         val newRecord = LedgerRecordProspect(
@@ -98,7 +105,7 @@ class LedgerAccountModel(
             referenceId = referenceId,
             transactionType = transactionType,
             transactionCategory = TransactionCategory.STANDARD,
-            balanceSnapshot = currentBalance!!,
+            balanceSnapshot = newBalance,
             verificationSignature = "",
             verificationCode = 0,
             verificationStatus = VerificationStatus.PENDING
