@@ -13,7 +13,7 @@ CREATE TABLE ledger_account
     last_modified_date TIMESTAMP    NOT NULL,
     version            INTEGER DEFAULT 0,
 
-    CONSTRAINT fk_ledger_acc_user FOREIGN KEY (user_id) REFERENCES user (id)
+    CONSTRAINT fk_ledger_acc_user FOREIGN KEY (user_id) REFERENCES user_account (id)
 );
 
 CREATE INDEX idx_user_id ON ledger_account (user_id);

@@ -34,18 +34,25 @@ enum class LedgerState {
 
 class LedgerAccountModel(
     val data: LedgerAccount,
-    val lastRecord: LedgerRecord? = null
+    val lastRecord: LedgerRecordModel? = null,
+    val history: List<LedgerRecordModel>? = emptyList()
 ) : BaseModel() {
 
     private var state: LedgerState = LedgerState.PRISTINE
     private val prospectRecords = mutableListOf<LedgerProspectRecord>()
+
+    init {
+        history.let { record -> record?.forEach {
+            it.verify()
+        } }
+    }
 
     fun getProspectRecords(): List<LedgerProspectRecord> {
         return prospectRecords.toList()
     }
 
     // The Current balance is the balance of the last record or 0 if there is no record
-    private var currentBalance = lastRecord?.balanceSnapshot ?: BigDecimal.ZERO
+    private var currentBalance = lastRecord?.data?.balanceSnapshot ?: BigDecimal.ZERO
 
     fun activate() {
         data.status = LedgerAccountStatus.ACTIVE
@@ -54,7 +61,7 @@ class LedgerAccountModel(
 
     fun balance(): BigDecimal {
         if (state == LedgerState.PRISTINE) {
-            return lastRecord?.balanceSnapshot
+            return lastRecord?.data?.balanceSnapshot
                 ?: throw IllegalStateException("Invalid balance state")
         }
         return currentBalance!!

@@ -38,9 +38,11 @@ class LedgerAccountService(
     }
 
     @Transactional(readOnly = true)
-    fun getAccountDetails(accountId: UUID): LedgerAccountDetailsDto {
-        return ledgerAccountRepository.findById(accountId)
-            .let { LedgerAccountDetailsDto.fromModel(it) }
+    fun getAccountDetails(accountId: UUID, historySize: Int? = 0): LedgerAccountDetailsDto {
+        return ledgerAccountRepository.findById(
+            id = accountId,
+            historySize = historySize
+        ).let { LedgerAccountDetailsDto.fromModel(it) }
     }
 
     @Transactional

@@ -10,7 +10,9 @@ import uk.co.mulecode.ddd.domain.model.LedgerAccountModel
 import uk.co.mulecode.ddd.domain.model.LedgerAccountStatus
 import uk.co.mulecode.ddd.domain.model.LedgerAccountType
 import uk.co.mulecode.ddd.domain.model.TransactionType
+import uk.co.mulecode.ddd.domain.model.VerificationStatus
 import java.math.BigDecimal
+import java.time.LocalDateTime
 import java.util.UUID
 
 data class LedgerAccountDto(
@@ -40,9 +42,22 @@ data class LedgerAccountDetailsDto(
     val description: String,
     val type: LedgerAccountType,
     val status: LedgerAccountStatus,
-    val balance: BigDecimal
+    val balance: BigDecimal,
+    val history: List<Record>? = emptyList()
 ) {
     companion object {
+
+        data class Record(
+            val date: LocalDateTime,
+            val referenceId: String,
+            val amount: BigDecimal,
+            val transactionType: TransactionType,
+            val balanceAfter: BigDecimal,
+            val signature: String,
+            val previousSignature: String,
+            val verificationStatus: VerificationStatus
+        )
+
         @JvmStatic
         fun fromModel(ledgerAccountModel: LedgerAccountModel): LedgerAccountDetailsDto {
             return LedgerAccountDetailsDto(
@@ -51,7 +66,19 @@ data class LedgerAccountDetailsDto(
                 description = ledgerAccountModel.data.description,
                 type = ledgerAccountModel.data.accountType,
                 status = ledgerAccountModel.data.status,
-                balance = ledgerAccountModel.balance()
+                balance = ledgerAccountModel.balance(),
+                history = ledgerAccountModel.history?.map {
+                    Record(
+                        date = it.createdAt,
+                        referenceId = it.data.referenceId,
+                        amount = it.data.amount,
+                        transactionType = it.data.transactionType,
+                        balanceAfter = it.data.balanceSnapshot,
+                        signature = it.data.verificationSignature,
+                        previousSignature = it.previousSignature ?: "",
+                        verificationStatus = it.status ?: VerificationStatus.PENDING
+                    )
+                }
             )
         }
     }

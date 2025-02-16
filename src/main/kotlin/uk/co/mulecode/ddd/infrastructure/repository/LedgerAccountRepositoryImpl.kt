@@ -2,19 +2,21 @@ package uk.co.mulecode.ddd.infrastructure.repository
 
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher
+import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import uk.co.mulecode.ddd.domain.model.LedgerAccountModel
 import uk.co.mulecode.ddd.domain.model.LedgerAccountStatus
 import uk.co.mulecode.ddd.domain.model.LedgerAccountType
+import uk.co.mulecode.ddd.domain.model.LedgerRecordModel
+import uk.co.mulecode.ddd.domain.model.VerificationModel
 import uk.co.mulecode.ddd.domain.model.VerificationStatus
 import uk.co.mulecode.ddd.domain.repository.LedgerAccountRepository
 import uk.co.mulecode.ddd.infrastructure.repository.jpa.JpaLedgerAccountEntity
 import uk.co.mulecode.ddd.infrastructure.repository.jpa.JpaLedgerAccountRepository
 import uk.co.mulecode.ddd.infrastructure.repository.jpa.JpaLedgerRecordEntity
 import uk.co.mulecode.ddd.infrastructure.repository.jpa.JpaLedgerRecordRepository
-import uk.co.mulecode.ddd.infrastructure.service.VerificationService
 import uk.co.mulecode.ddd.infrastructure.utils.IdentificationGenerator.Companion.sortedUuid
 import java.util.UUID
 
@@ -24,7 +26,6 @@ class LedgerAccountRepositoryImpl(
     private val eventPublisher: ApplicationEventPublisher,
     private val jpaLedgerAccountRepository: JpaLedgerAccountRepository,
     private val jpaLedgerRecordRepository: JpaLedgerRecordRepository,
-    private val verificationService: VerificationService
 ) : LedgerAccountRepository {
 
     private val log = KotlinLogging.logger {}
@@ -53,7 +54,7 @@ class LedgerAccountRepositoryImpl(
     }
 
     @Transactional
-    override fun findById(id: UUID): LedgerAccountModel {
+    override fun findById(id: UUID, historySize: Int?): LedgerAccountModel {
         log.info { "Repository: Loading ledger account $id" }
 
         val account = jpaLedgerAccountRepository.findByIdOrNull(id)
@@ -61,9 +62,31 @@ class LedgerAccountRepositoryImpl(
 
         val lastRecord = jpaLedgerRecordRepository.findTopByPayerAccountIdOrderByIdDesc(account.id)
 
+        val history = historySize
+            ?.takeIf { it > 0 }
+            ?.let {
+                jpaLedgerRecordRepository.findAllByPayerAccountIdOrderByIdDesc(
+                    accountId = account.id, page = Pageable.ofSize(it)
+                )
+            }
+
         return LedgerAccountModel(
             data = account,
-            lastRecord = lastRecord
+            lastRecord = LedgerRecordModel(
+                data = lastRecord,
+                createdAt = lastRecord.createdDate
+                    ?: throw IllegalStateException("Ledger Record does not have a creation date")
+            ),
+            history = history?.content
+                ?.sortedByDescending { it.createdDate }
+                ?.zipWithNext { current, previous ->
+                    LedgerRecordModel(
+                        data = current,
+                        previousSignature = previous.verificationSignature,
+                        createdAt = current.createdDate
+                            ?: throw IllegalStateException("Ledger Record does not have a creation date")
+                    )
+                }
         )
     }
 
@@ -73,15 +96,14 @@ class LedgerAccountRepositoryImpl(
         val entity = jpaLedgerAccountRepository.save(model.data as JpaLedgerAccountEntity)
         log.debug { "LedgerAccountModel saved: ${entity.id}" }
 
-        var lastVerificationSignature = model.lastRecord?.verificationSignature ?: ""
+        var lastVerificationSignature = model.lastRecord?.data?.verificationSignature ?: ""
 
         model.getProspectRecords().forEach {
             log.debug { "Saving LedgerRecord: ${it.id}" }
 
-            val verification = verificationService.create(
-                previousSignature = lastVerificationSignature,
-                data = it.rawSignature()
-            )
+            val verification = VerificationModel(previousSignature = lastVerificationSignature)
+            verification.create(data = it.rawSignature())
+
             jpaLedgerRecordRepository.save(
                 JpaLedgerRecordEntity(
                     id = sortedUuid(),
@@ -110,8 +132,7 @@ class LedgerAccountRepositoryImpl(
     @Transactional(readOnly = true)
     override fun findAll(): List<LedgerAccountModel> {
         log.info { "Getting all LedgerAccountModel ${Thread.currentThread().name}" }
-        return jpaLedgerAccountRepository.findAll()
-            .map { LedgerAccountModel(it) }
+        return jpaLedgerAccountRepository.findAll().map { LedgerAccountModel(it) }
     }
 
 }

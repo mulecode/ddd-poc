@@ -8,6 +8,7 @@ import uk.co.mulecode.ddd.application.dto.LedgerAccountDetailsDto
 import uk.co.mulecode.ddd.application.dto.LedgerAccountDto
 import uk.co.mulecode.ddd.application.dto.LedgerAccountTransactionCreationDto
 import uk.co.mulecode.ddd.application.service.LedgerAccountService
+import uk.co.mulecode.ddd.interfaces.api.AccountDetailsQueryParams
 import uk.co.mulecode.ddd.interfaces.api.LedgerAccountApi
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
@@ -34,9 +35,15 @@ class LedgerAccountController(
     }
 
     @Async("controllerTreadPoolExecutor")
-    override fun getAccountDetails(accountId: UUID): CompletableFuture<LedgerAccountDetailsDto> {
+    override fun getAccountDetails(
+        accountId: UUID,
+        query: AccountDetailsQueryParams
+    ): CompletableFuture<LedgerAccountDetailsDto> {
         return CompletableFuture.completedFuture(
-            ledgerAccountService.getAccountDetails(accountId)
+            ledgerAccountService.getAccountDetails(
+                accountId = accountId,
+                historySize = query.historySize
+            )
         )
     }
 

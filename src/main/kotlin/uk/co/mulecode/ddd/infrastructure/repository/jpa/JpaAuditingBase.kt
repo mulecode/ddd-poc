@@ -16,32 +16,23 @@ import java.time.LocalDateTime
 abstract class JpaAuditingBase {
 
     @CreatedBy
-    @Column(name = "created_by", nullable = true, updatable = false)
+    @Column(name = "created_by", nullable = false, updatable = false)
     var createdBy: String? = null
 
     @CreatedDate
-    @Column(name = "created_date", nullable = true, updatable = false)
+    @Column(name = "created_date", nullable = false, updatable = false)
     var createdDate: LocalDateTime? = null
 
     @LastModifiedBy
-    @Column(name = "last_modified_by", nullable = true)
+    @Column(name = "last_modified_by", nullable = false, updatable = true)
     var lastModifiedBy: String? = null
 
     @LastModifiedDate
-    @Column(name = "last_modified_date", nullable = true)
+    @Column(name = "last_modified_date", nullable = false, updatable = true)
     var lastModifiedDate: LocalDateTime? = null
 
     @Version
-    @Column(name = "version", nullable = false)
+    @Column(name = "version", nullable = false, updatable = true)
     val version: Int = 0
 
-//    @PrePersist
-//    fun prePersist() {
-//        println("PrePersist: createdBy=$createdBy, createdAt=$createdDate")
-//    }
-//
-//    @PreUpdate
-//    fun preUpdate() {
-//        println("PreUpdate: updatedBy=$lastModifiedBy, updatedAt=$lastModifiedDate")
-//    }
 }

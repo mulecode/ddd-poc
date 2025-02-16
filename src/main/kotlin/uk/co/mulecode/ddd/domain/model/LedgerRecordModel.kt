@@ -1,8 +1,28 @@
 package uk.co.mulecode.ddd.domain.model
 
 import java.math.BigDecimal
+import java.time.LocalDateTime
 import java.util.UUID
 
+enum class TransactionType {
+    DEBIT, // Amount being added to the account
+    CREDIT // Amount being deducted from the account
+}
+
+enum class TransactionStatus {
+    PROCESSED,
+    PENDING,
+    FAILED
+}
+
+enum class TransactionCategory {
+    STANDARD,   // – A regular credit or debit transaction.
+    REVERSAL,   // – A transaction that negates a previous one.
+    REFUND,     // – A customer-initiated refund.
+    CHARGEBACK, // – A dispute-initiated reversal.
+    FEE,        // – A system-imposed fee (e.g., processing fee).
+    ADJUSTMENT, // – A manual correction (if applicable).
+}
 
 interface LedgerRecord : VerificationVo {
     val id: UUID
@@ -30,7 +50,21 @@ interface LedgerRecord : VerificationVo {
 
 class LedgerRecordModel(
     val data: LedgerRecord,
+    val previousSignature: String? = null,
+    val createdAt: LocalDateTime
 ) : BaseModel() {
+
+    var status: VerificationStatus? = null
+
+    fun verify() {
+        val verification = VerificationModel(previousSignature = previousSignature ?: "")
+        verification.create(data.rawSignature())
+        status = if (verification.verificationSignature == data.verificationSignature) {
+            VerificationStatus.VERIFIED
+        } else {
+            VerificationStatus.FAILED
+        }
+    }
 
 }
 

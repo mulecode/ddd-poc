@@ -14,7 +14,7 @@ import uk.co.mulecode.ddd.domain.model.UserStatus
 import java.util.UUID
 
 @Entity
-@Table(name = "user")
+@Table(name = "user_account")
 class JpaUserEntity(
     @Id
     @Column(name = "id", updatable = false, nullable = false)
