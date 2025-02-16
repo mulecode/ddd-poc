@@ -2,6 +2,7 @@ package uk.co.mulecode.ddd.application.utils
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 
 class JsonUtils {
@@ -9,6 +10,8 @@ class JsonUtils {
 
         private val objectMapper: ObjectMapper = jacksonObjectMapper().apply {
             findAndRegisterModules()
+            configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false) // Ensures ISO 8601 format
+            setTimeZone(java.util.TimeZone.getTimeZone("UTC")) // Forces UTC timezone
         }
 
         @JvmStatic

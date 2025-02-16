@@ -1,11 +1,11 @@
 package uk.co.mulecode.ddd.domain.repository
 
-import uk.co.mulecode.ddd.domain.model.UserModel
+import uk.co.mulecode.ddd.domain.model.UserBaseModel
 import java.util.*
 
 interface UserRepository {
-    fun loadUser(userId: UUID): UserModel
-    fun registerUser(userModel: UserModel): UserModel
-    fun updateUser(userModel: UserModel): UserModel
-    fun getAllUsers(): List<UserModel>
+    fun create(name: String, email: String): UserBaseModel
+    fun findById(userId: UUID): UserBaseModel
+    fun save(userModel: UserBaseModel): UserBaseModel
+    fun findAll(): List<UserBaseModel>
 }

@@ -13,7 +13,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 class UserIntegrationTest extends IntegrationMinTest {
 
-    def "should return empty users details list when no users registered"() {
+    def "Should return empty users details list when no users registered"() {
         when: "We call the endpoint to retrieve the user"
         def result = mockMvc.perform(get("/users")
                 .accept(MediaType.APPLICATION_JSON))
@@ -42,7 +42,7 @@ class UserIntegrationTest extends IntegrationMinTest {
                 .andExpect(jsonPath('$.email').value("loren@email.com"))
     }
 
-    def "should return users details list"() {
+    def "Should return users details list"() {
         given: "A user is registered"
         def userRequest = '{"name": "John Doe", "email": "email@fake.com"}'
         mockMvc.perform(post("/users")

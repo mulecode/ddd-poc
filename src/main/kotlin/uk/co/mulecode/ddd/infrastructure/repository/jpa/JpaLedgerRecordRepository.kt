@@ -7,11 +7,11 @@ import org.springframework.stereotype.Repository
 import java.util.UUID
 
 @Repository
-interface JpaLedgerRepository : JpaRepository<LedgerRecordEntity, String> {
+interface JpaLedgerRecordRepository : JpaRepository<JpaLedgerRecordEntity, UUID> {
 
-    fun findFirstByUserIdOrderByCreatedAtDesc(userId: String): LedgerRecordEntity?
+    fun findTopByPayerAccountIdOrderByCreatedDateDesc(accountId: UUID): JpaLedgerRecordEntity
 
-    fun findAllByUserIdOrderByCreatedAtDesc(userId: String, page: Pageable): Page<LedgerRecordEntity>
+    fun findAllByPayerAccountIdOrderByCreatedDateDesc(accountId: UUID, page: Pageable): Page<JpaLedgerRecordEntity>
 }
 
 

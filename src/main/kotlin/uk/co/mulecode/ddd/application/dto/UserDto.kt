@@ -3,7 +3,7 @@ package uk.co.mulecode.ddd.application.dto
 import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
-import uk.co.mulecode.ddd.domain.model.UserModel
+import uk.co.mulecode.ddd.domain.model.UserBaseModel
 import java.util.*
 
 data class UserDto(
@@ -13,11 +13,11 @@ data class UserDto(
 ) {
     companion object {
         @JvmStatic
-        fun fromModel(userModel: UserModel): UserDto {
+        fun fromModel(userModel: UserBaseModel): UserDto {
             return UserDto(
-                id = userModel.id,
-                name = userModel.name,
-                email = userModel.email
+                id = userModel.data.id,
+                name = userModel.data.name,
+                email = userModel.data.email
             )
         }
     }

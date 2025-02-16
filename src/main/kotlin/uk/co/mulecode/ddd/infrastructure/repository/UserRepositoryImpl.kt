@@ -5,13 +5,14 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
-import uk.co.mulecode.ddd.domain.model.UserModel
+import uk.co.mulecode.ddd.domain.model.UserBaseModel
+import uk.co.mulecode.ddd.domain.model.UserStatus
 import uk.co.mulecode.ddd.domain.repository.UserRepository
 import uk.co.mulecode.ddd.infrastructure.repository.jpa.JpaUserRepository
-import uk.co.mulecode.ddd.infrastructure.repository.jpa.UserEntity
-import java.util.*
+import uk.co.mulecode.ddd.infrastructure.repository.jpa.JpaUserEntity
+import uk.co.mulecode.ddd.infrastructure.utils.IdentificationGenerator.Companion.sortedUuid
+import java.util.UUID
 
-private const val AGGREGATE_ROOT_NAME = "entity"
 
 @Component
 class UserRepositoryImpl(
@@ -21,82 +22,46 @@ class UserRepositoryImpl(
 
     private val log = KotlinLogging.logger {}
 
+    @Transactional
+    override fun create(name: String, email: String): UserBaseModel {
+        log.info { "Creating new user" }
+        return UserBaseModel(
+            jpaUserRepository.save(
+                JpaUserEntity(
+                    id = sortedUuid(),
+                    name = name,
+                    email = email,
+                    status = UserStatus.INACTIVE
+                )
+            )
+        )
+    }
+
     @Transactional(readOnly = true)
-    override fun loadUser(userId: UUID): UserModel {
+    override fun findById(userId: UUID): UserBaseModel {
         log.info { "Repository: Loading user $userId" }
-        return jpaUserRepository.findByIdOrNull(userId.toString())
-            ?.let { toModel(it, detached = false) }
+        return jpaUserRepository.findByIdOrNull(userId)
+            ?.let { UserBaseModel(it) }
             ?: throw IllegalArgumentException("User not found for id $userId")
     }
 
     @Transactional
-    override fun registerUser(userModel: UserModel): UserModel {
-        log.info { "Registering user name ${userModel.name}" }
-        return saveUser(userModel)
-    }
-
-    @Transactional
-    override fun updateUser(userModel: UserModel): UserModel {
-        log.info { "Updating user: ${userModel.id} name ${userModel.name}" }
-        return saveUser(userModel)
-    }
-
-    @Transactional(readOnly = true)
-    override fun getAllUsers(): List<UserModel> {
-        log.info { "Repository: Getting all users ${Thread.currentThread().name}" }
-        return jpaUserRepository.findAll().map {
-            toModel(it)
-        }
-    }
-
-    private fun saveUser(userModel: UserModel): UserModel {
-        val newEntity = toEntity(userModel)
-        log.info { "User new: ${newEntity.id}" }
-        val entity = jpaUserRepository.save(newEntity)
+    override fun save(userModel: UserBaseModel): UserBaseModel {
+        log.info { "Saving user: ${userModel.data.id}" }
+        val entity = jpaUserRepository.save(userModel.data as JpaUserEntity)
         log.info { "User saved: ${entity.id}" }
-        val savedUser = toModel(entity, detached = false)
         userModel.domainEvents().forEach {
             eventPublisher.publishEvent(it)
         }
         userModel.clearDomainEvents()
-        return savedUser
+        return userModel
     }
 
-    companion object {
-
-        private val log = KotlinLogging.logger {}
-
-        fun toModel(userEntity: UserEntity, detached: Boolean = true): UserModel {
-            val model = UserModel(
-                id = UUID.fromString(userEntity.id),
-                name = userEntity.name,
-                email = userEntity.email,
-                status = userEntity.status
-            )
-            if (!detached) {
-                model.setInfraContext(AGGREGATE_ROOT_NAME, userEntity)
-            }
-            return model
-        }
-
-        fun toEntity(userModel: UserModel): UserEntity {
-            return if (userModel.getInfraContext().containsKey(AGGREGATE_ROOT_NAME)) {
-                log.info { "Updating existing user entity" }
-                val entity = userModel.getInfraContext()[AGGREGATE_ROOT_NAME] as UserEntity
-                entity.apply {
-                    name = userModel.name
-                    email = userModel.email
-                    status = userModel.status
-                }
-            } else {
-                log.info { "Creating new user entity" }
-                UserEntity(
-                    id = userModel.id.toString(),
-                    name = userModel.name,
-                    email = userModel.email,
-                    status = userModel.status
-                )
-            }
-        }
+    @Transactional(readOnly = true)
+    override fun findAll(): List<UserBaseModel> {
+        log.info { "Repository: Getting all users ${Thread.currentThread().name}" }
+        return jpaUserRepository.findAll()
+            .map { UserBaseModel(it) }
     }
+
 }
