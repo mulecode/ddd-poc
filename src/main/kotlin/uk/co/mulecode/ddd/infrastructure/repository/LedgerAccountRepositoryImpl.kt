@@ -7,15 +7,12 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import uk.co.mulecode.ddd.domain.model.LedgerAccountModel
-import uk.co.mulecode.ddd.domain.model.LedgerAccountStatus
-import uk.co.mulecode.ddd.domain.model.LedgerAccountType
 import uk.co.mulecode.ddd.domain.model.LedgerRecordModel
 import uk.co.mulecode.ddd.domain.repository.LedgerAccountRepository
 import uk.co.mulecode.ddd.infrastructure.repository.jpa.JpaLedgerAccountEntity
 import uk.co.mulecode.ddd.infrastructure.repository.jpa.JpaLedgerAccountRepository
 import uk.co.mulecode.ddd.infrastructure.repository.jpa.JpaLedgerRecordEntity
 import uk.co.mulecode.ddd.infrastructure.repository.jpa.JpaLedgerRecordRepository
-import uk.co.mulecode.ddd.infrastructure.utils.IdentificationGenerator.Companion.sortedUuid
 import java.util.UUID
 
 
@@ -28,28 +25,28 @@ class LedgerAccountRepositoryImpl(
 
     private val log = KotlinLogging.logger {}
 
-    @Transactional
-    override fun create(
-        userId: UUID,
-        type: LedgerAccountType,
-        name: String,
-        description: String
-    ): LedgerAccountModel {
-        log.info { "Creating new ledger account" }
-        val account = jpaLedgerAccountRepository.save(
-            JpaLedgerAccountEntity(
-                id = sortedUuid(),
-                userId = userId,
-                accountType = type,
-                name = name,
-                description = description,
-                status = LedgerAccountStatus.INACTIVE
-            )
-        )
-        return LedgerAccountModel(
-            data = account,
-        )
-    }
+//    @Transactional
+//    override fun create(
+//        userId: UUID,
+//        type: LedgerAccountType,
+//        name: String,
+//        description: String
+//    ): LedgerAccountModel {
+//        log.info { "Creating new ledger account" }
+//        val account = jpaLedgerAccountRepository.save(
+//            JpaLedgerAccountEntity(
+//                id = sortedUuid(),
+//                userId = userId,
+//                accountType = type,
+//                name = name,
+//                description = description,
+//                status = LedgerAccountStatus.INACTIVE
+//            )
+//        )
+//        return LedgerAccountModel(
+//            data = account,
+//        )
+//    }
 
     @Transactional
     override fun findById(id: UUID, historySize: Int?): LedgerAccountModel {
@@ -95,7 +92,20 @@ class LedgerAccountRepositoryImpl(
     @Transactional
     override fun save(model: LedgerAccountModel): LedgerAccountModel {
         log.debug { "Saving LedgerAccountModel: ${model.data.id}" }
-        val entity = jpaLedgerAccountRepository.save(model.data as JpaLedgerAccountEntity)
+        val entity = if (model.data is JpaLedgerAccountRepository) {
+            jpaLedgerAccountRepository.save(model.data as JpaLedgerAccountEntity)
+        } else {
+            jpaLedgerAccountRepository.save(
+                JpaLedgerAccountEntity(
+                    id = model.data.id,
+                    userId = model.data.userId,
+                    accountType = model.data.accountType,
+                    name = model.data.name,
+                    description = model.data.description,
+                    status = model.data.status
+                )
+            )
+        }
         log.debug { "LedgerAccountModel saved: ${entity.id}" }
         model.getProspectRecords().forEach {
             log.debug { "Saving LedgerRecord: ${it.id} nonce: ${it.verificationCode} hash: ${it.verificationSignature} raw: ${it.rawSignature()}" }
