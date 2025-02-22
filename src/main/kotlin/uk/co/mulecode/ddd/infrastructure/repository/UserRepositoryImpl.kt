@@ -5,12 +5,10 @@ import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
-import uk.co.mulecode.ddd.domain.model.UserBaseModel
-import uk.co.mulecode.ddd.domain.model.UserStatus
+import uk.co.mulecode.ddd.domain.model.UserModel
 import uk.co.mulecode.ddd.domain.repository.UserRepository
-import uk.co.mulecode.ddd.infrastructure.repository.jpa.JpaUserRepository
 import uk.co.mulecode.ddd.infrastructure.repository.jpa.JpaUserEntity
-import uk.co.mulecode.ddd.infrastructure.utils.IdentificationGenerator.Companion.sortedUuid
+import uk.co.mulecode.ddd.infrastructure.repository.jpa.JpaUserRepository
 import java.util.UUID
 
 
@@ -22,46 +20,42 @@ class UserRepositoryImpl(
 
     private val log = KotlinLogging.logger {}
 
-    @Transactional
-    override fun create(name: String, email: String): UserBaseModel {
-        log.info { "Creating new user" }
-        return UserBaseModel(
-            jpaUserRepository.save(
-                JpaUserEntity(
-                    id = sortedUuid(),
-                    name = name,
-                    email = email,
-                    status = UserStatus.INACTIVE
-                )
-            )
-        )
-    }
-
     @Transactional(readOnly = true)
-    override fun findById(userId: UUID): UserBaseModel {
+    override fun findById(userId: UUID): UserModel {
         log.info { "Repository: Loading user $userId" }
         return jpaUserRepository.findByIdOrNull(userId)
-            ?.let { UserBaseModel(it) }
+            ?.let { UserModel(it) }
             ?: throw IllegalArgumentException("User not found for id $userId")
     }
 
     @Transactional
-    override fun save(userModel: UserBaseModel): UserBaseModel {
+    override fun save(userModel: UserModel): UserModel {
         log.info { "Saving user: ${userModel.data.id}" }
-        val entity = jpaUserRepository.save(userModel.data as JpaUserEntity)
+        val entity = if (userModel.data is JpaUserEntity) {
+            jpaUserRepository.save(userModel.data)
+        } else {
+            jpaUserRepository.save(
+                JpaUserEntity(
+                    id = userModel.data.id,
+                    name = userModel.data.name,
+                    email = userModel.data.email,
+                    status = userModel.data.status
+                )
+            )
+        }
         log.info { "User saved: ${entity.id}" }
         userModel.domainEvents().forEach {
             eventPublisher.publishEvent(it)
         }
         userModel.clearDomainEvents()
-        return userModel
+        return findById(entity.id)
     }
 
     @Transactional(readOnly = true)
-    override fun findAll(): List<UserBaseModel> {
+    override fun findAll(): List<UserModel> {
         log.info { "Repository: Getting all users ${Thread.currentThread().name}" }
         return jpaUserRepository.findAll()
-            .map { UserBaseModel(it) }
+            .map { UserModel(it) }
     }
 
 }

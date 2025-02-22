@@ -7,8 +7,7 @@ import org.springframework.test.context.ActiveProfiles
 import spock.lang.Subject
 import uk.co.mulecode.ddd.UnitTest
 import uk.co.mulecode.ddd.application.dto.UserRegistrationDto
-import uk.co.mulecode.ddd.domain.model.User
-import uk.co.mulecode.ddd.domain.model.UserBaseModel
+import uk.co.mulecode.ddd.domain.model.UserModel
 import uk.co.mulecode.ddd.domain.model.UserStatus
 import uk.co.mulecode.ddd.domain.repository.UserRepository
 
@@ -30,15 +29,6 @@ class UserServiceTest extends UnitTest {
         given:
         def userRequest = new UserRegistrationDto("John Doe", "john.doe@example.com")
 
-        // Create real UserBaseModel instance
-        def createdModel = Mock(UserBaseModel) {
-            getData() >> Stub(User) {
-                getId() >> UUID.randomUUID()
-                getName() >> userRequest.name
-                getEmail() >> userRequest.email
-            }
-        }
-
         when:
         def response = userService.registerUser(userRequest)
 
@@ -47,9 +37,14 @@ class UserServiceTest extends UnitTest {
         response.name == userRequest.name
         response.email == userRequest.email
 
-        1 * userRepository.create(userRequest.name, userRequest.email) >> createdModel
-        1 * createdModel.activateUser()
-        1 * userRepository.save(createdModel) >> createdModel
+        1 * userRepository.save(_) >> { List args ->
+            def model = args[0] as UserModel
+            assert model.data.id != null
+            assert model.data.name == userRequest.name
+            assert model.data.email == userRequest.email
+            assert model.data.status == UserStatus.ACTIVE
+            return model
+        }
     }
 
 }

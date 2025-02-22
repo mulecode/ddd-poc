@@ -6,6 +6,7 @@ import uk.co.mulecode.ddd.application.dto.LedgerAccountCreationDto
 import uk.co.mulecode.ddd.application.dto.LedgerAccountDetailsDto
 import uk.co.mulecode.ddd.application.dto.LedgerAccountDto
 import uk.co.mulecode.ddd.application.dto.LedgerAccountTransactionCreationDto
+import uk.co.mulecode.ddd.domain.model.LedgerAccountModel
 import uk.co.mulecode.ddd.domain.model.TransactionType
 import uk.co.mulecode.ddd.domain.repository.LedgerAccountRepository
 import java.math.BigDecimal
@@ -18,7 +19,7 @@ class LedgerAccountService(
 
     @Transactional
     fun createLedgerAccount(request: LedgerAccountCreationDto): LedgerAccountDto {
-        val account = ledgerAccountRepository.create(
+        val account = LedgerAccountModel.create(
             userId = request.userId,
             type = request.type,
             name = request.name,
