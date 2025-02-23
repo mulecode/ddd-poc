@@ -8,8 +8,10 @@ import org.springframework.context.annotation.Import
 import org.springframework.http.MediaType
 import uk.co.mulecode.ddd.ControllerTest
 import uk.co.mulecode.ddd.application.dto.UserDto
-import uk.co.mulecode.ddd.application.dto.UserRegistrationDto
+import uk.co.mulecode.ddd.application.dto.UserListDto
+import uk.co.mulecode.ddd.application.dto.UserRegistrationRequest
 import uk.co.mulecode.ddd.application.service.UserService
+import uk.co.mulecode.ddd.domain.model.UserStatus
 import uk.co.mulecode.ddd.interfaces.config.ControllerConfig
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.asyncDispatch
@@ -29,7 +31,9 @@ class UserControllerTest extends ControllerTest {
     @Tag("unit")
     def "should return empty users details list when no users registered"() {
         given:
-        userService.getAllUsers() >> []
+        userService.getAllUsers(_) >> Stub(UserListDto) {
+            getUsers() >> []
+        }
 
         when: "We call the endpoint to retrieve the user"
         def result = mockMvc.perform(get("/users")
@@ -39,15 +43,17 @@ class UserControllerTest extends ControllerTest {
         then: "The response status is OK and the user details are returned"
         mockMvc.perform(asyncDispatch(result))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath('$').isEmpty())
+                .andExpect(jsonPath('$.users').isEmpty())
     }
 
     def "should return users details list"() {
         given: "A user is registered"
         def userId = UUID.randomUUID()
-        userService.getAllUsers() >> [
-                new UserDto(userId, "John Doe", "email@fake.com")
-        ]
+        userService.getAllUsers(_) >> Stub(UserListDto) {
+            getUsers() >> [
+                    new UserDto(userId, "John Doe", "email@fake.com", UserStatus.ACTIVE)
+            ]
+        }
 
         when: "We call the endpoint to retrieve the user"
         def result = mockMvc.perform(get("/users")
@@ -57,7 +63,7 @@ class UserControllerTest extends ControllerTest {
         then: "The response status is OK and the user details are returned"
         mockMvc.perform(asyncDispatch(result))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath('$[*]').value(
+                .andExpect(jsonPath('$.users[*]').value(
                         Matchers.hasItem(
                                 Matchers.anyOf(
                                         Matchers.hasEntry("id", userId),
@@ -70,9 +76,10 @@ class UserControllerTest extends ControllerTest {
 
     def "Should save a user"() {
         given: "A user registration request"
-        def userRegistrationDto = new UserRegistrationDto(
+        def userRegistrationDto = new UserRegistrationRequest(
                 "Loren Ipsum",
-                "loren@email.com"
+                "loren@email.com",
+                UserStatus.ACTIVE
         )
 
         and: "Expected identification"
@@ -88,7 +95,7 @@ class UserControllerTest extends ControllerTest {
         when: "We call the endpoint to retrieve the user"
         def result = mockMvc.perform(post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content('{"name": "Loren Ipsum", "email": "loren@email.com"}'))
+                .content('{"name": "Loren Ipsum", "email": "loren@email.com", "status": "ACTIVE"}'))
                 .andReturn()
 
         then: "The response status is OK and the user details are returned"

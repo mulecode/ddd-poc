@@ -1,9 +1,7 @@
 import type {Metadata} from "next";
 import {Geist, Geist_Mono} from "next/font/google";
 import "./globals.css";
-import "./styles.scss";
 import React from "react";
-import MenuBar from "@/app/components/MenuBar";
 
 const geistSans = Geist({
     variable: "--font-geist-sans",
@@ -27,10 +25,15 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-        <body
-            className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-        >
-        <MenuBar/>
+        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <nav className="bg-gray-800 p-4">
+            <div className="container mx-auto flex justify-between items-center">
+                <a href="/" className="text-white text-lg font-bold">Demo</a>
+                <div className="space-x-4">
+                    <a href="/users" className="text-gray-300 hover:text-white">Users</a>
+                </div>
+            </div>
+        </nav>
         {children}
         </body>
         </html>

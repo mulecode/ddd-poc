@@ -16,21 +16,26 @@ class AppControllerAdvice {
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    fun handleValidationExceptions(ex: MethodArgumentNotValidException): ResponseEntity<Map<String, String?>> {
+    fun handleValidationExceptions(ex: MethodArgumentNotValidException): ResponseEntity<Map<String, Any?>> {
         val errors = mutableMapOf<String, String?>()
         ex.bindingResult.allErrors.forEach { error ->
             val fieldName = (error as FieldError).field
             val errorMessage = error.defaultMessage
             errors[fieldName] = errorMessage
         }
-        return ResponseEntity(errors, HttpStatus.BAD_REQUEST)
+        val response = mutableMapOf<String, Any?>()
+        response["message"] = "Validation failed"
+        response["errors"] = errors
+        response["status"] = HttpStatus.BAD_REQUEST.value()
+        return ResponseEntity(response, HttpStatus.BAD_REQUEST)
     }
 
     @ExceptionHandler(IllegalArgumentException::class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    fun handleIllegalArgumentExceptions(ex: IllegalArgumentException): ResponseEntity<Map<String, String?>> {
-        val response = mutableMapOf<String, String?>()
+    fun handleIllegalArgumentExceptions(ex: IllegalArgumentException): ResponseEntity<Map<String, Any?>> {
+        val response = mutableMapOf<String, Any?>()
         response["message"] = ex.message
+        response["status"] = HttpStatus.BAD_REQUEST.value()
         return ResponseEntity(response, HttpStatus.BAD_REQUEST)
     }
 }
