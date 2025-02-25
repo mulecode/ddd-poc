@@ -20,16 +20,26 @@ class JpaLedgerAccountEntity(
     @Id
     @Column(name = "id", updatable = false, nullable = false)
     override val id: UUID,
+
     @NotNull
+    @Column(name = "user_id", updatable = false, nullable = false)
     override val userId: UUID,
+
     @NotBlank
     @Size(min = 5, max = 50)
+    @Column(name = "name", updatable = true, nullable = false)
     override var name: String,
+
     @NotBlank
     @Size(min = 5, max = 254)
+    @Column(name = "description", updatable = true, nullable = false)
     override var description: String,
+
     @Enumerated(EnumType.STRING)
+    @Column(name = "status", updatable = true, nullable = false)
     override var status: LedgerAccountStatus,
+
     @Enumerated(EnumType.STRING)
-    override var accountType: LedgerAccountType,
+    @Column(name = "account_type", updatable = false, nullable = false)
+    override val accountType: LedgerAccountType,
 ) : LedgerAccount, JpaAuditingBase()

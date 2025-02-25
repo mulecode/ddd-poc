@@ -25,29 +25,6 @@ class LedgerAccountRepositoryImpl(
 
     private val log = KotlinLogging.logger {}
 
-//    @Transactional
-//    override fun create(
-//        userId: UUID,
-//        type: LedgerAccountType,
-//        name: String,
-//        description: String
-//    ): LedgerAccountModel {
-//        log.info { "Creating new ledger account" }
-//        val account = jpaLedgerAccountRepository.save(
-//            JpaLedgerAccountEntity(
-//                id = sortedUuid(),
-//                userId = userId,
-//                accountType = type,
-//                name = name,
-//                description = description,
-//                status = LedgerAccountStatus.INACTIVE
-//            )
-//        )
-//        return LedgerAccountModel(
-//            data = account,
-//        )
-//    }
-
     @Transactional
     override fun findById(id: UUID, historySize: Int?): LedgerAccountModel {
         log.info { "Repository: Loading ledger account $id" }
@@ -75,10 +52,6 @@ class LedgerAccountRepositoryImpl(
             history = history?.content
                 ?.sortedBy { it.createdDate }
                 ?.zipWithNext { previous, current ->
-                    log.debug { "--> Prev: ${previous.id} current: ${current.id}" }
-
-                    log.debug { "previous: ${previous.verificationSignature}" }
-
                     LedgerRecordModel(
                         data = current,
                         previousSignature = previous.verificationSignature,

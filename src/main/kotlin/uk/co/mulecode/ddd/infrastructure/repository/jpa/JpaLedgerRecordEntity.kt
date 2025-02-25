@@ -23,6 +23,7 @@ class JpaLedgerRecordEntity(
     override val payerAccountId: UUID,
     @Column(updatable = false, nullable = false)
     override val payeeAccountId: UUID,
+    @Column(updatable = false, nullable = false)
     override val referenceId: String,
     @Column(updatable = false, nullable = false)
     override val amount: BigDecimal,

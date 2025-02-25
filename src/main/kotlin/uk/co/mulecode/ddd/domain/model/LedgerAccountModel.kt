@@ -28,10 +28,6 @@ interface LedgerAccount {
     var status: LedgerAccountStatus
 }
 
-enum class LedgerState {
-    PRISTINE,
-    ALTERED
-}
 
 class LedgerAccountModel(
     val data: LedgerAccount,
@@ -39,7 +35,6 @@ class LedgerAccountModel(
     val history: List<LedgerRecordModel>? = emptyList()
 ) : BaseModel() {
 
-    private var state: LedgerState = LedgerState.PRISTINE
     private val prospectRecords = mutableListOf<LedgerRecord>()
 
     init {
@@ -58,23 +53,16 @@ class LedgerAccountModel(
     }
 
     fun balance(): BigDecimal {
-        if (state == LedgerState.PRISTINE) {
-            return lastRecord?.data?.balanceSnapshot ?: BigDecimal.ZERO
+        return if (prospectRecords.isEmpty()) {
+            lastRecord?.data?.balanceSnapshot ?: BigDecimal.ZERO
+        } else {
+            prospectRecords.last().balanceSnapshot
         }
-        return prospectRecords.last().balanceSnapshot
-    }
-
-    fun signature(): String {
-        if (state == LedgerState.PRISTINE) {
-            return lastRecord?.data?.verificationSignature ?: ""
-        }
-        return prospectRecords.last().verificationSignature
     }
 
     fun debit(amount: BigDecimal, referenceId: String) {
         val newBalance = balance().plus(amount)
         addTransaction(amount, referenceId, newBalance, TransactionType.DEBIT)
-        state = LedgerState.ALTERED
     }
 
     fun credit(amount: BigDecimal, referenceId: String) {
@@ -83,7 +71,14 @@ class LedgerAccountModel(
             throw IllegalStateException("Insufficient funds")
         }
         addTransaction(amount, referenceId, newBalance, TransactionType.CREDIT)
-        state = LedgerState.ALTERED
+    }
+
+    private fun signature(): String {
+        return if (prospectRecords.isEmpty()) {
+            lastRecord?.data?.verificationSignature ?: ""
+        } else {
+            prospectRecords.last().verificationSignature
+        }
     }
 
     private fun addTransaction(
