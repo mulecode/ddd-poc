@@ -6,7 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import spock.lang.Subject
 import uk.co.mulecode.ddd.UnitTest
-import uk.co.mulecode.ddd.application.dto.UserRegistrationDto
+import uk.co.mulecode.ddd.application.dto.UserRegistrationRequest
 import uk.co.mulecode.ddd.domain.model.UserModel
 import uk.co.mulecode.ddd.domain.model.UserStatus
 import uk.co.mulecode.ddd.domain.repository.UserRepository
@@ -27,7 +27,11 @@ class UserServiceTest extends UnitTest {
 
     def "Should create a user"() {
         given:
-        def userRequest = new UserRegistrationDto("John Doe", "john.doe@example.com")
+        def userRequest = new UserRegistrationRequest(
+                "John Doe",
+                "john.doe@example.com",
+                UserStatus.ACTIVE
+        )
 
         when:
         def response = userService.registerUser(userRequest)

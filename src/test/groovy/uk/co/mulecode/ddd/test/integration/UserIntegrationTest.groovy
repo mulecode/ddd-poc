@@ -23,14 +23,18 @@ class UserIntegrationTest extends IntegrationMinTest {
         mockMvc.perform(asyncDispatch(result))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath('$').isEmpty())
+                .andExpect(jsonPath('$.users').isEmpty())
+                .andExpect(jsonPath('$.page').value(0))
+                .andExpect(jsonPath('$.totalPages').value(0))
+                .andExpect(jsonPath('$.size').value(10))
+                .andExpect(jsonPath('$.totalElements').value(0))
     }
 
     def "Should save a user"() {
         when: "We call the endpoint to retrieve the user"
         def result = mockMvc.perform(post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content('{"name": "Loren Ipsum", "email": "loren@email.com"}'))
+                .content('{"name": "Loren Ipsum", "email": "loren@email.com", "status": "ACTIVE"}'))
                 .andReturn()
 
         then: "The response status is OK and the user details are returned"
@@ -44,7 +48,7 @@ class UserIntegrationTest extends IntegrationMinTest {
 
     def "Should return users details list"() {
         given: "A user is registered"
-        def userRequest = '{"name": "John Doe", "email": "email@fake.com"}'
+        def userRequest = '{"name": "John Doe", "email": "email@fake.com", "status": "ACTIVE"}'
         mockMvc.perform(post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(userRequest))
@@ -59,7 +63,7 @@ class UserIntegrationTest extends IntegrationMinTest {
         mockMvc.perform(asyncDispatch(result))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath('$[*]').value(
+                .andExpect(jsonPath('$.users[*]').value(
                         Matchers.hasItem(
                                 Matchers.anyOf(
                                         Matchers.hasKey("id"),

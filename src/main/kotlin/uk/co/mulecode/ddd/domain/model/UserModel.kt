@@ -18,6 +18,8 @@ interface User {
 
 class UserModel(
     val data: User,
+    val page: Int? = 0,
+    val size: Int? = 10
 ) : BaseModel() {
 
     fun activateUser() {
@@ -37,3 +39,10 @@ class UserModel(
     }
 }
 
+class UserListModel(
+    val userList: List<UserModel>,
+    val page: Int,
+    val totalPages: Int,
+    val size: Int,
+    val totalElements: Long
+)
