@@ -63,6 +63,7 @@ export default function UsersPage() {
             <AppTitle
                 title="Users Management"
                 subTitle="List of all users"
+                backgroundImage="/dashboard/users.png"
                 actionButton={
                     <AppButton
                         variant="primary"

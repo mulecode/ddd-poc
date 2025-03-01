@@ -37,7 +37,10 @@ export default function UserCreatePage() {
 
     return (
         <div>
-            <AppTitle title="Users Management" subTitle="Create New User"/>
+            <AppTitle title="Users Management"
+                      subTitle="Create New User"
+                      backgroundImage="/dashboard/users.png"
+            />
             <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 bg-white mt-6">
                 {/* Success/Error Messages */}
                 {success && <p className="text-green-500 bg-green-800 p-3 rounded mb-4">{success}</p>}

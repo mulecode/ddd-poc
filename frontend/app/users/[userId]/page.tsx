@@ -44,6 +44,7 @@ export default function UserViewPage() {
             <AppTitle
                 title="Users Management"
                 subTitle="User details"
+                backgroundImage="/dashboard/users.png"
             />
             <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 bg-white mt-6">
                 {loading && <p className="text-gray-400">Loading user data...</p>}
