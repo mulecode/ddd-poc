@@ -30,7 +30,6 @@ export default function RootLayout({
             <div className="container mx-auto flex justify-between items-center">
                 <a href="/" className="text-white text-lg font-bold">Home</a>
                 <div className="space-x-4">
-                    <a href="/users" className="text-gray-300 hover:text-white">Users</a>
                 </div>
             </div>
         </nav>
