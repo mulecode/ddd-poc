@@ -1,11 +1,13 @@
 package uk.co.mulecode.ddd.interfaces.controller
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import org.springframework.data.domain.Pageable
 import org.springframework.scheduling.annotation.Async
 import org.springframework.stereotype.Component
 import uk.co.mulecode.ddd.application.dto.LedgerAccountCreationDto
 import uk.co.mulecode.ddd.application.dto.LedgerAccountDetailsDto
 import uk.co.mulecode.ddd.application.dto.LedgerAccountDto
+import uk.co.mulecode.ddd.application.dto.LedgerAccountListDto
 import uk.co.mulecode.ddd.application.dto.LedgerAccountTransactionCreationDto
 import uk.co.mulecode.ddd.application.service.LedgerAccountService
 import uk.co.mulecode.ddd.interfaces.api.AccountDetailsQueryParams
@@ -28,9 +30,9 @@ class LedgerAccountController(
     }
 
     @Async("controllerTreadPoolExecutor")
-    override fun listAllLedgerAccounts(): CompletableFuture<List<LedgerAccountDto>> {
+    override fun listAllLedgerAccounts(pageable: Pageable): CompletableFuture<LedgerAccountListDto> {
         return CompletableFuture.completedFuture(
-            ledgerAccountService.listAllLedgerAccounts()
+            ledgerAccountService.listAllLedgerAccounts(pageable)
         )
     }
 

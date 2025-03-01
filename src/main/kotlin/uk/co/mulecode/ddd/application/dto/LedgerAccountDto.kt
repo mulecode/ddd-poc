@@ -15,6 +15,14 @@ import java.math.BigDecimal
 import java.time.Instant
 import java.util.UUID
 
+data class LedgerAccountListDto(
+    val ledgerAccounts: List<LedgerAccountDto>,
+    val page: Int,
+    val totalPages: Int,
+    val size: Int,
+    val totalElements: Long
+)
+
 data class LedgerAccountDto(
     val id: UUID,
     val name: String,

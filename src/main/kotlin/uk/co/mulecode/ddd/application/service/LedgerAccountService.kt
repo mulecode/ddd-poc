@@ -1,11 +1,14 @@
 package uk.co.mulecode.ddd.application.service
 
+import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.co.mulecode.ddd.application.dto.LedgerAccountCreationDto
 import uk.co.mulecode.ddd.application.dto.LedgerAccountDetailsDto
 import uk.co.mulecode.ddd.application.dto.LedgerAccountDto
+import uk.co.mulecode.ddd.application.dto.LedgerAccountListDto
 import uk.co.mulecode.ddd.application.dto.LedgerAccountTransactionCreationDto
+import uk.co.mulecode.ddd.domain.model.LedgerAccountListModel
 import uk.co.mulecode.ddd.domain.model.LedgerAccountModel
 import uk.co.mulecode.ddd.domain.model.TransactionType
 import uk.co.mulecode.ddd.domain.repository.LedgerAccountRepository
@@ -33,9 +36,17 @@ class LedgerAccountService(
     }
 
     @Transactional(readOnly = true)
-    fun listAllLedgerAccounts(): List<LedgerAccountDto> {
-        return ledgerAccountRepository.findAll()
-            .map { LedgerAccountDto.fromModel(it) }
+    fun listAllLedgerAccounts(pageable: Pageable): LedgerAccountListDto {
+        return ledgerAccountRepository.findAll(pageable)
+            .let {
+                LedgerAccountListDto(
+                    ledgerAccounts = it.ledgerAccountList.map { account -> LedgerAccountDto.fromModel(account) },
+                    page = it.page,
+                    totalPages = it.totalPages,
+                    size = it.size,
+                    totalElements = it.totalElements
+                )
+            }
     }
 
     @Transactional(readOnly = true)

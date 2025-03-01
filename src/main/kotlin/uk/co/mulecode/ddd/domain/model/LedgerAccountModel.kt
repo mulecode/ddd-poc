@@ -133,3 +133,10 @@ class LedgerAccountModel(
     }
 }
 
+class LedgerAccountListModel(
+    val ledgerAccountList: List<LedgerAccountModel>,
+    val page: Int,
+    val totalPages: Int,
+    val size: Int,
+    val totalElements: Long
+)

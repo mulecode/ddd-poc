@@ -2,6 +2,8 @@ package uk.co.mulecode.ddd.interfaces.api
 
 import jakarta.validation.Valid
 import jakarta.validation.constraints.Positive
+import org.springframework.data.domain.Pageable
+import org.springframework.data.web.PageableDefault
 import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.ModelAttribute
@@ -13,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController
 import uk.co.mulecode.ddd.application.dto.LedgerAccountCreationDto
 import uk.co.mulecode.ddd.application.dto.LedgerAccountDetailsDto
 import uk.co.mulecode.ddd.application.dto.LedgerAccountDto
+import uk.co.mulecode.ddd.application.dto.LedgerAccountListDto
 import uk.co.mulecode.ddd.application.dto.LedgerAccountTransactionCreationDto
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
@@ -26,7 +29,7 @@ interface LedgerAccountApi {
     fun createLedgerAccount(@Valid @RequestBody request: LedgerAccountCreationDto): CompletableFuture<LedgerAccountDto>
 
     @GetMapping
-    fun listAllLedgerAccounts(): CompletableFuture<List<LedgerAccountDto>>
+    fun listAllLedgerAccounts(@PageableDefault(page = 0, size = 10) pageable: Pageable): CompletableFuture<LedgerAccountListDto>
 
     @GetMapping("/{accountId}")
     fun getAccountDetails(

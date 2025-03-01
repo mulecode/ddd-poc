@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
+import uk.co.mulecode.ddd.domain.model.LedgerAccountListModel
 import uk.co.mulecode.ddd.domain.model.LedgerAccountModel
 import uk.co.mulecode.ddd.domain.model.LedgerRecordModel
 import uk.co.mulecode.ddd.domain.repository.LedgerAccountRepository
@@ -106,9 +107,17 @@ class LedgerAccountRepositoryImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun findAll(): List<LedgerAccountModel> {
+    override fun findAll(pageable: Pageable): LedgerAccountListModel {
         log.info { "Getting all LedgerAccountModel ${Thread.currentThread().name}" }
-        return jpaLedgerAccountRepository.findAll().map { LedgerAccountModel(it) }
+        return jpaLedgerAccountRepository.findAll(pageable).let {
+            LedgerAccountListModel(
+                ledgerAccountList = it.content.map { ledger -> LedgerAccountModel(ledger) },
+                page = it.number,
+                totalPages = it.totalPages,
+                size = it.size,
+                totalElements = it.totalElements
+            )
+        }
     }
 
 }
