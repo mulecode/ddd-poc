@@ -31,7 +31,7 @@ class UserControllerTest extends ControllerTest {
     @Tag("unit")
     def "should return empty users details list when no users registered"() {
         given:
-        userService.getAllUsers(_) >> Stub(UserListDto) {
+        userService.getAllUsers(_, _) >> Stub(UserListDto) {
             getUsers() >> []
         }
 
@@ -49,7 +49,7 @@ class UserControllerTest extends ControllerTest {
     def "should return users details list"() {
         given: "A user is registered"
         def userId = UUID.randomUUID()
-        userService.getAllUsers(_) >> Stub(UserListDto) {
+        userService.getAllUsers(_, _) >> Stub(UserListDto) {
             getUsers() >> [
                     new UserDto(userId, "John Doe", "email@fake.com", UserStatus.ACTIVE)
             ]

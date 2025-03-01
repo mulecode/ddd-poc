@@ -3,7 +3,7 @@ import React, {useEffect, useState} from "react";
 import {useParams, useRouter} from "next/navigation";
 import AppTitle from "@/app/components/AppTitle";
 import AppButton from "@/app/components/AppButton";
-import AppUserForm, {UserFormData} from "@/app/forms/AppUserForm";
+import AppUserForm, {UserFormData} from "@/app/users/AppUserForm";
 
 interface UserEditRequest {
     id: string;

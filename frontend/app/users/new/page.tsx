@@ -2,7 +2,7 @@
 import {useState} from "react";
 import {useRouter} from "next/navigation";
 import AppTitle from "@/app/components/AppTitle";
-import AppUserForm, {UserFormData} from "@/app/forms/AppUserForm";
+import AppUserForm, {UserFormData} from "@/app/users/AppUserForm";
 
 
 export default function UserCreatePage() {

@@ -13,21 +13,23 @@ import {
 import clsx from "clsx";
 import {ChevronDownIcon} from "@heroicons/react/24/solid";
 import {CheckIcon} from "@heroicons/react/16/solid";
+import {placeholder} from "@babel/types";
 
 interface AppSelectProps {
-    title: string;
-    description: string;
+    title?: string;
+    description?: string;
+    placeholder?: string;
     itemSelected: string;
     items: AppSelectItem[];
     onChange?: (value: string) => void;
 }
 
-interface AppSelectItem {
+export interface AppSelectItem {
     id: string;
     name: string;
 }
 
-const AppFormSelect: React.FC<AppSelectProps> = ({title, description, itemSelected, items, onChange}) => {
+const AppFormSelect: React.FC<AppSelectProps> = ({title, description, placeholder, itemSelected, items, onChange}) => {
     const [query, setQuery] = useState('');
     const [selected, setSelected] = useState<AppSelectItem>(
         items.find(item => item.id === itemSelected) || {id: '', name: ''}
@@ -48,6 +50,7 @@ const AppFormSelect: React.FC<AppSelectProps> = ({title, description, itemSelect
             <Label className="text-sm/6 font-medium">{title}</Label>
             <Description className="text-sm/6 text-gray-800">{description}</Description>
             <Combobox value={selected}
+                      name={placeholder}
                       onChange={handleChange}
                       onClose={() => setQuery('')}
             >

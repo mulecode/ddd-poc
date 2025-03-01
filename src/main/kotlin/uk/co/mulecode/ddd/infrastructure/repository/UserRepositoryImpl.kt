@@ -3,11 +3,14 @@ package uk.co.mulecode.ddd.infrastructure.repository
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Pageable
+import org.springframework.data.jpa.domain.Specification
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
+import uk.co.mulecode.ddd.application.dto.UserFilterRequest
 import uk.co.mulecode.ddd.domain.model.UserListModel
 import uk.co.mulecode.ddd.domain.model.UserModel
+import uk.co.mulecode.ddd.domain.model.UserStatus
 import uk.co.mulecode.ddd.domain.repository.UserRepository
 import uk.co.mulecode.ddd.infrastructure.repository.jpa.JpaUserEntity
 import uk.co.mulecode.ddd.infrastructure.repository.jpa.JpaUserRepository
@@ -54,9 +57,9 @@ class UserRepositoryImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun findAll(pageable: Pageable): UserListModel {
+    override fun findAll(pageable: Pageable, filter: UserFilterRequest?): UserListModel {
         log.info { "Repository: Getting all users ${Thread.currentThread().name}" }
-        return jpaUserRepository.findAll(pageable)
+        return jpaUserRepository.findAll(filter?.toSpeficiation(), pageable)
             .let {
                 UserListModel(
                     userList = it.content.map { user -> UserModel(user) },
@@ -67,5 +70,39 @@ class UserRepositoryImpl(
                 )
             }
     }
+}
 
+
+fun UserFilterRequest.toSpeficiation(): Specification<JpaUserEntity> {
+    return UserSpecification.withFilter(this)
+}
+
+object UserSpecification {
+
+    fun withFilter(filter: UserFilterRequest): Specification<JpaUserEntity> {
+        return Specification { root, _, criteriaBuilder ->
+            val predicates = mutableListOf<jakarta.persistence.criteria.Predicate>()
+
+            filter.id?.let { predicates.add(criteriaBuilder.equal(root.get<UUID>("id"), it)) }
+            filter.name?.let {
+                predicates.add(
+                    criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("name")),
+                        "%${it.lowercase()}%"
+                    )
+                )
+            }
+            filter.email?.let {
+                predicates.add(
+                    criteriaBuilder.equal(
+                        criteriaBuilder.lower(root.get("email")),
+                        it.lowercase()
+                    )
+                )
+            }
+            filter.status?.let { predicates.add(criteriaBuilder.equal(root.get<UserStatus>("status"), it)) }
+
+            criteriaBuilder.and(*predicates.toTypedArray())
+        }
+    }
 }

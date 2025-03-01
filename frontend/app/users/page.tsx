@@ -6,6 +6,8 @@ import AppButton from "@/app/components/AppButton";
 import AppTableNav from "@/app/components/AppTableNav";
 import Image from "next/image";
 import Link from "next/link";
+import AppFilterBar from "@/app/components/AppFilterBar";
+import {AppSelectItem} from "@/app/components/AppFormSelect";
 
 interface User {
     id: string;
@@ -27,12 +29,13 @@ export default function UsersPage() {
     const [pageSize, setPageSize] = useState<number>(5);
     const [totalPages, setTotalPages] = useState<number>(1);
     const [totalElements, setTotalElements] = useState<number>(0);
+    const [queryStrings, setQueryStrings] = useState<string>("");
 
     const router = useRouter();
 
     useEffect(() => {
-        console.log(`Fetching users... ${currentPage} ${pageSize}`);
-        fetch(`http://localhost:8080/app/users?page=${currentPage}&size=${pageSize}`)
+        console.log(`Fetching users... ${currentPage} ${pageSize} ${queryStrings}`);
+        fetch(`http://localhost:8080/app/users?page=${currentPage}&size=${pageSize}&${queryStrings}`)
             .then((response) => response.json())
             .then((data: UsersApiResponse) => {
                 setUsers(data.users);
@@ -40,7 +43,20 @@ export default function UsersPage() {
                 setTotalElements(data.totalElements);
             })
             .catch((error) => console.error("Error fetching users:", error));
-    }, [currentPage, pageSize]);
+    }, [currentPage, pageSize, queryStrings]);
+
+
+    const filters = [
+        {id: "id", name: "Identification"},
+        {id: "name", name: "Name"},
+        {id: "email", name: "Email"},
+    ];
+
+    const handleSearch = (selectedFilters: AppSelectItem[]) => {
+        console.log("Filters submitted:", selectedFilters);
+        setCurrentPage(0);
+        setQueryStrings(selectedFilters.map(f => `${f.id}=${f.name}`).join("&"));
+    };
 
     return (
         <div>
@@ -59,24 +75,32 @@ export default function UsersPage() {
             />
             <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 bg-white mt-6">
                 {/* List of Users */}
+                <AppFilterBar filters={filters}
+                              defaultFilter="name"
+                              onSearch={handleSearch}/>
+                {/* List of Users */}
                 <table className="min-w-full border border-gray-700 bg-white">
                     <thead className="bg-gray-800 text-white">
                     <tr>
-                        <th className="py-2 px-4 border-b border-gray-700 text-left">ID</th>
-                        <th className="py-2 px-4 border-b border-gray-700 text-left">Name</th>
-                        <th className="py-2 px-4 border-b border-gray-700 text-left">Email</th>
+                        <th className="py-2 px-4 border-b border-gray-700 text-left w-2/6">ID</th>
+                        <th className="py-2 px-4 border-b border-gray-700 text-left w-2/6">Name</th>
+                        <th className="py-2 px-4 border-b border-gray-700 text-left w-2/6">Email</th>
                     </tr>
                     </thead>
                     <tbody>
                     {users.map((user) => (
                         <tr key={user.id} className="hover:bg-gray-400">
-                            <td className="py-2 px-4 border-b border-gray-700">
+                            <td className="py-2 px-4 border-b border-gray-700 w-2/6">
                                 <Link href={`/users/${user.id}`}>
                                     {user.id}
                                 </Link>
                             </td>
-                            <td className="py-2 px-4 border-b border-gray-700">{user.name}</td>
-                            <td className="py-2 px-4 border-b border-gray-700">{user.email}</td>
+                            <td className="py-2 px-4 border-b border-gray-700 w-2/6">
+                                {user.name}
+                            </td>
+                            <td className="py-2 px-4 border-b border-gray-700 w-2/6">
+                                {user.email}
+                            </td>
                         </tr>
                     ))}
                     </tbody>

@@ -29,7 +29,10 @@ class LoggerPreRequest : PreRequestHandler {
         val appRequestId = request.getAttribute("appUniqueId") as String
         val headers = request.headerNames.toList().joinToString { "$it: ${request.getHeader(it)}" }
         log.debug {
-            "=> Request [$appRequestId]: ${request.method} ${request.requestURI}, Headers: $headers, Body: $requestBody"
+            """=> Request [$appRequestId]: ${request.method} ${request.requestURI}, 
+                |Query: ${request.queryString},
+                |Headers: $headers, 
+                |Body: $requestBody""".trimMargin()
         }
     }
 }
@@ -44,7 +47,11 @@ class LoggerPostRequest : PostRequestHandler {
         val responseBody = response.bodyAsString()
         val request = response.getRequest()
         val appRequestId = request.getAttribute("appUniqueId") as? String
-        log.debug { "<= Response [$appRequestId]: ${request.method} ${request.requestURI} - ${response.status} $responseBody" }
+        log.debug { """<= Response [$appRequestId]: ${request.method} ${request.requestURI},
+            |res
+            |Headers: ${response.headerNames.toList().joinToString { "$it: ${response.getHeader(it)}" }},
+            |Status: ${response.status} 
+            |Body: $responseBody""".trimMargin() }
     }
 }
 

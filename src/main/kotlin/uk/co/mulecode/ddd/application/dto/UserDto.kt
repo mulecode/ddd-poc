@@ -35,6 +35,13 @@ data class UserDto(
     }
 }
 
+data class UserFilterRequest(
+    val id: UUID? = null,
+    val name: String? = null,
+    val email: String? = null,
+    val status: UserStatus? = null,
+)
+
 data class UserRegistrationRequest(
     @field:NotBlank(message = "Name is required")
     @field:Size(min = 5, max = 50, message = "Name must be between 5 and 50 characters")

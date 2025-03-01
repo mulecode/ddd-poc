@@ -5,6 +5,7 @@ import org.springframework.data.domain.Pageable
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uk.co.mulecode.ddd.application.dto.UserDto
+import uk.co.mulecode.ddd.application.dto.UserFilterRequest
 import uk.co.mulecode.ddd.application.dto.UserListDto
 import uk.co.mulecode.ddd.application.dto.UserModifyRequest
 import uk.co.mulecode.ddd.application.dto.UserRegistrationRequest
@@ -51,9 +52,9 @@ class UserService(
     }
 
     @Transactional(readOnly = true)
-    fun getAllUsers(pageable: Pageable): UserListDto {
+    fun getAllUsers(pageable: Pageable, filter: UserFilterRequest): UserListDto {
         log.info { "Service: Getting all users ${Thread.currentThread().name}" }
-        return userRepository.findAll(pageable)
+        return userRepository.findAll(pageable, filter)
             .let {
                 UserListDto(
                     users = it.userList.map { userModel -> UserDto.fromModel(userModel) },

@@ -1,5 +1,6 @@
 "use client"
 import React from "react";
+import clsx from "clsx";
 
 interface AppButtonProps {
     type?: "button" | "submit" | "reset";
@@ -13,7 +14,7 @@ interface AppButtonProps {
 
 const buttonStyles: Record<string, string> = {
     primary: "bg-blue-900 hover:bg-blue-700 text-white",
-    secondary: "text-gray-800 hover:text-blue-900",
+    secondary: "text-gray-800 hover:bg-gray-300 hover:text-blue-900",
     danger: "bg-red-700 hover:bg-red-600 text-white",
     success: "bg-green-700 hover:bg-green-600 text-white",
 };

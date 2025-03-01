@@ -6,13 +6,16 @@ import clsx from "clsx";
 
 
 interface AppFormInputProps {
-    title: string;
-    description: string;
+    title?: string;
+    description?: string;
     type: string;
     required?: boolean;
     value: string;
     errors?: string[];
+    className?: string;
+    placeholder?: string;
     onChange: (value: string | any) => void;
+    onKeyDown?: (value: string | any) => void;
 }
 
 const AppFormInput: React.FC<AppFormInputProps> = ({
@@ -22,16 +25,28 @@ const AppFormInput: React.FC<AppFormInputProps> = ({
                                                        required,
                                                        value,
                                                        errors,
-                                                       onChange
+                                                       className,
+                                                       placeholder,
+                                                       onChange,
+                                                       onKeyDown
                                                    }: AppFormInputProps) => {
     return (
-        <Field className="sm:col-span-3">
-            <Label className="text-sm-6 font-medium">{title}</Label>
+        <Field className={clsx(
+            className,
+            "sm:col-span-3"
+        )}>
+            <Label className={clsx(
+                className,
+                "text-sm-6 font-medium"
+            )}>{title}</Label>
             <Description className="text-sm-6 text-gray-800">{description}</Description>
             <Input name="name" value={value}
                    required={required}
                    type={type}
+
                    onChange={(e) => onChange(e.target.value)}
+                   onKeyDown={onKeyDown}
+                   placeholder={placeholder}
                    className={clsx(
                        'block w-full p-1 outline-none',
                        'border-b-2 border-gray-500',
