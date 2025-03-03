@@ -63,7 +63,7 @@ export default function LedgerPage() {
         <div>
             <AppTitle
                 title="Ledger"
-                subTitle="List of all ledge accounts"
+                subTitle="List of all ledger accounts"
                 backgroundImage="/dashboard/ledger.png"
                 actionButton={
                     <AppButton
@@ -71,7 +71,7 @@ export default function LedgerPage() {
                         onClick={() => router.push("/ledger/new")}
                     >
                         <Image src="/plus.svg" alt="View" width={24} height={24}/>
-                        <span>Create New User</span>
+                        <span>Create New Ledger</span>
                     </AppButton>
                 }
             />
@@ -79,30 +79,30 @@ export default function LedgerPage() {
                 <AppFilterBar filters={filters}
                               defaultFilter="name"
                               onSearch={handleSearch}/>
-                <table className="min-w-full border border-gray-500 bg-white">
-                    <thead className="bg-gray-500 text-white">
+                <table className="min-w-full bg-white">
+                    <thead className="text-gray-600 border-b-2 border-gray-400">
                     <tr>
-                        <th className="py-2 px-4 border-b border-gray-500 text-left w-2/8">ID</th>
-                        <th className="py-2 px-4 border-b border-gray-500 text-left w-2/8">Name</th>
-                        <th className="py-2 px-4 border-b border-gray-500 text-left w-2/8">Description</th>
-                        <th className="py-2 px-4 border-b border-gray-500 text-left w-2/8">Type</th>
+                        <th className="py-2 px-4 text-left w-2/8">ID</th>
+                        <th className="py-2 px-4 text-left w-2/8">Name</th>
+                        <th className="py-2 px-4 text-left w-2/8">Description</th>
+                        <th className="py-2 px-4 text-left w-2/8">Type</th>
                     </tr>
                     </thead>
                     <tbody>
                     {ledger.map((item) => (
-                        <tr key={item.id} className="hover:bg-gray-300">
-                            <td className="py-2 px-4 border-b border-gray-500 w-2/8">
+                        <tr key={item.id} className="hover:bg-gray-300 border-b-1 border-gray-300">
+                            <td className="py-2 px-4 text-xs w-2/8">
                                 <Link href={`/ledger/${item.id}`}>
                                     {item.id}
                                 </Link>
                             </td>
-                            <td className="py-2 px-4 border-b border-gray-500 w-2/8">
+                            <td className="py-2 px-4 w-2/8">
                                 {item.name}
                             </td>
-                            <td className="py-2 px-4 border-b border-gray-500 w-2/8">
+                            <td className="py-2 px-4 w-2/8">
                                 {item.description}
                             </td>
-                            <td className="py-2 px-4 border-b border-gray-500 w-2/8">
+                            <td className="py-2 px-4 w-2/8">
                                 {item.type}
                             </td>
                         </tr>
