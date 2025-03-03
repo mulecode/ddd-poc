@@ -6,10 +6,12 @@ import jakarta.validation.constraints.Digits
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
+import uk.co.mulecode.ddd.domain.model.LedgerAccountFilter
 import uk.co.mulecode.ddd.domain.model.LedgerAccountModel
 import uk.co.mulecode.ddd.domain.model.LedgerAccountStatus
 import uk.co.mulecode.ddd.domain.model.LedgerAccountType
 import uk.co.mulecode.ddd.domain.model.TransactionType
+import uk.co.mulecode.ddd.domain.model.UserStatus
 import uk.co.mulecode.ddd.domain.model.VerificationStatus
 import java.math.BigDecimal
 import java.time.Instant
@@ -93,6 +95,14 @@ data class LedgerAccountDetailsDto(
         }
     }
 }
+
+data class LedgerAccountFilterRequest(
+    override val id: UUID? = null,
+    override val name: String? = null,
+    override val description: String? = null,
+    override val accountType: LedgerAccountType? = null,
+    override val status: LedgerAccountStatus? = null,
+) : LedgerAccountFilter
 
 data class LedgerAccountCreationDto(
     @field:NotNull(message = "User ID is required")

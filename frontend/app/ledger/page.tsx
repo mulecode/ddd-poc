@@ -79,30 +79,30 @@ export default function LedgerPage() {
                 <AppFilterBar filters={filters}
                               defaultFilter="name"
                               onSearch={handleSearch}/>
-                <table className="min-w-full border border-gray-700 bg-white">
-                    <thead className="bg-gray-800 text-white">
+                <table className="min-w-full border border-gray-500 bg-white">
+                    <thead className="bg-gray-500 text-white">
                     <tr>
-                        <th className="py-2 px-4 border-b border-gray-700 text-left w-2/8">ID</th>
-                        <th className="py-2 px-4 border-b border-gray-700 text-left w-2/8">Name</th>
-                        <th className="py-2 px-4 border-b border-gray-700 text-left w-2/8">Description</th>
-                        <th className="py-2 px-4 border-b border-gray-700 text-left w-2/8">Type</th>
+                        <th className="py-2 px-4 border-b border-gray-500 text-left w-2/8">ID</th>
+                        <th className="py-2 px-4 border-b border-gray-500 text-left w-2/8">Name</th>
+                        <th className="py-2 px-4 border-b border-gray-500 text-left w-2/8">Description</th>
+                        <th className="py-2 px-4 border-b border-gray-500 text-left w-2/8">Type</th>
                     </tr>
                     </thead>
                     <tbody>
                     {ledger.map((item) => (
-                        <tr key={item.id} className="hover:bg-gray-400">
-                            <td className="py-2 px-4 border-b border-gray-700 w-2/8">
+                        <tr key={item.id} className="hover:bg-gray-300">
+                            <td className="py-2 px-4 border-b border-gray-500 w-2/8">
                                 <Link href={`/ledger/${item.id}`}>
                                     {item.id}
                                 </Link>
                             </td>
-                            <td className="py-2 px-4 border-b border-gray-700 w-2/8">
+                            <td className="py-2 px-4 border-b border-gray-500 w-2/8">
                                 {item.name}
                             </td>
-                            <td className="py-2 px-4 border-b border-gray-700 w-2/8">
+                            <td className="py-2 px-4 border-b border-gray-500 w-2/8">
                                 {item.description}
                             </td>
-                            <td className="py-2 px-4 border-b border-gray-700 w-2/8">
+                            <td className="py-2 px-4 border-b border-gray-500 w-2/8">
                                 {item.type}
                             </td>
                         </tr>

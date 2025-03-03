@@ -9,6 +9,13 @@ enum class UserStatus {
     INACTIVE
 }
 
+interface UserFilter {
+    val id: UUID?
+    val name: String?
+    val email: String?
+    val status: UserStatus?
+}
+
 interface User {
     val id: UUID
     var name: String

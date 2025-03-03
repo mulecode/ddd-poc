@@ -42,7 +42,7 @@ const AppFilterBar: React.FC<AppFilterBarProps> = ({filters, defaultFilter, onSe
     };
 
     return (
-        <div className="p-3 border border-gray-300 w-full">
+        <div className="p-3 w-full">
             <div className="flex w-full flex-auto gap-5 mb-3 items-center">
 
                 <AppFormSelect placeholder="Attribute"

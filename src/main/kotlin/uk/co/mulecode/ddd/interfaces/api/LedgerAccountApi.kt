@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController
 import uk.co.mulecode.ddd.application.dto.LedgerAccountCreationDto
 import uk.co.mulecode.ddd.application.dto.LedgerAccountDetailsDto
 import uk.co.mulecode.ddd.application.dto.LedgerAccountDto
+import uk.co.mulecode.ddd.application.dto.LedgerAccountFilterRequest
 import uk.co.mulecode.ddd.application.dto.LedgerAccountListDto
 import uk.co.mulecode.ddd.application.dto.LedgerAccountTransactionCreationDto
 import java.util.UUID
@@ -29,7 +30,10 @@ interface LedgerAccountApi {
     fun createLedgerAccount(@Valid @RequestBody request: LedgerAccountCreationDto): CompletableFuture<LedgerAccountDto>
 
     @GetMapping
-    fun listAllLedgerAccounts(@PageableDefault(page = 0, size = 10) pageable: Pageable): CompletableFuture<LedgerAccountListDto>
+    fun listAllLedgerAccounts(
+        @Valid @ModelAttribute queryParams: LedgerAccountFilterRequest,
+        @PageableDefault(page = 0, size = 10) pageable: Pageable
+    ): CompletableFuture<LedgerAccountListDto>
 
     @GetMapping("/{accountId}")
     fun getAccountDetails(

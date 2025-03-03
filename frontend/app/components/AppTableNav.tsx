@@ -53,7 +53,7 @@ const AppTableNav: React.FC<AppTableNavProps> = ({
                     className={clsx(
                         "relative inline-flex items-center px-4 py-2 text-sm font-semibold border border-gray-300 transition",
                         currentPage === index
-                            ? "z-10 bg-gray-800 text-white"
+                            ? "z-10 bg-gray-500 text-white"
                             : "text-gray-800 hover:bg-gray-400"
                     )}
                 >

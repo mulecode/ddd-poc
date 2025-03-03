@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component
 import uk.co.mulecode.ddd.application.dto.LedgerAccountCreationDto
 import uk.co.mulecode.ddd.application.dto.LedgerAccountDetailsDto
 import uk.co.mulecode.ddd.application.dto.LedgerAccountDto
+import uk.co.mulecode.ddd.application.dto.LedgerAccountFilterRequest
 import uk.co.mulecode.ddd.application.dto.LedgerAccountListDto
 import uk.co.mulecode.ddd.application.dto.LedgerAccountTransactionCreationDto
 import uk.co.mulecode.ddd.application.service.LedgerAccountService
@@ -30,9 +31,12 @@ class LedgerAccountController(
     }
 
     @Async("controllerTreadPoolExecutor")
-    override fun listAllLedgerAccounts(pageable: Pageable): CompletableFuture<LedgerAccountListDto> {
+    override fun listAllLedgerAccounts(
+        queryParams: LedgerAccountFilterRequest,
+        pageable: Pageable
+    ): CompletableFuture<LedgerAccountListDto> {
         return CompletableFuture.completedFuture(
-            ledgerAccountService.listAllLedgerAccounts(pageable)
+            ledgerAccountService.listAllLedgerAccounts(pageable, queryParams)
         )
     }
 

@@ -19,6 +19,14 @@ enum class LedgerAccountType {
     EXPENSES
 }
 
+interface LedgerAccountFilter {
+    val id: UUID?
+    val name: String?
+    val description: String?
+    val accountType: LedgerAccountType?
+    val status: LedgerAccountStatus?
+}
+
 interface LedgerAccount {
     val id: UUID
     val userId: UUID

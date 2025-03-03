@@ -7,7 +7,7 @@ import org.springframework.data.jpa.domain.Specification
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
-import uk.co.mulecode.ddd.application.dto.UserFilterRequest
+import uk.co.mulecode.ddd.domain.model.UserFilter
 import uk.co.mulecode.ddd.domain.model.UserListModel
 import uk.co.mulecode.ddd.domain.model.UserModel
 import uk.co.mulecode.ddd.domain.model.UserStatus
@@ -57,9 +57,9 @@ class UserRepositoryImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun findAll(pageable: Pageable, filter: UserFilterRequest?): UserListModel {
+    override fun findAll(pageable: Pageable, filter: UserFilter?): UserListModel {
         log.info { "Repository: Getting all users ${Thread.currentThread().name}" }
-        return jpaUserRepository.findAll(filter?.toSpeficiation(), pageable)
+        return jpaUserRepository.findAll(filter?.toSpecification(), pageable)
             .let {
                 UserListModel(
                     userList = it.content.map { user -> UserModel(user) },
@@ -73,16 +73,15 @@ class UserRepositoryImpl(
 }
 
 
-fun UserFilterRequest.toSpeficiation(): Specification<JpaUserEntity> {
+fun UserFilter.toSpecification(): Specification<JpaUserEntity> {
     return UserSpecification.withFilter(this)
 }
 
 object UserSpecification {
 
-    fun withFilter(filter: UserFilterRequest): Specification<JpaUserEntity> {
+    fun withFilter(filter: UserFilter): Specification<JpaUserEntity> {
         return Specification { root, _, criteriaBuilder ->
             val predicates = mutableListOf<jakarta.persistence.criteria.Predicate>()
-
             filter.id?.let { predicates.add(criteriaBuilder.equal(root.get<UUID>("id"), it)) }
             filter.name?.let {
                 predicates.add(

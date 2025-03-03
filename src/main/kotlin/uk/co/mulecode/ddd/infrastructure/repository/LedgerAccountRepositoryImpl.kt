@@ -3,11 +3,15 @@ package uk.co.mulecode.ddd.infrastructure.repository
 import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Pageable
+import org.springframework.data.jpa.domain.Specification
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
+import uk.co.mulecode.ddd.domain.model.LedgerAccountFilter
 import uk.co.mulecode.ddd.domain.model.LedgerAccountListModel
 import uk.co.mulecode.ddd.domain.model.LedgerAccountModel
+import uk.co.mulecode.ddd.domain.model.LedgerAccountStatus
+import uk.co.mulecode.ddd.domain.model.LedgerAccountType
 import uk.co.mulecode.ddd.domain.model.LedgerRecordModel
 import uk.co.mulecode.ddd.domain.repository.LedgerAccountRepository
 import uk.co.mulecode.ddd.infrastructure.repository.jpa.JpaLedgerAccountEntity
@@ -107,9 +111,9 @@ class LedgerAccountRepositoryImpl(
     }
 
     @Transactional(readOnly = true)
-    override fun findAll(pageable: Pageable): LedgerAccountListModel {
+    override fun findAll(pageable: Pageable, filter: LedgerAccountFilter): LedgerAccountListModel {
         log.info { "Getting all LedgerAccountModel ${Thread.currentThread().name}" }
-        return jpaLedgerAccountRepository.findAll(pageable).let {
+        return jpaLedgerAccountRepository.findAll(filter.toSpecification(), pageable).let {
             LedgerAccountListModel(
                 ledgerAccountList = it.content.map { ledger -> LedgerAccountModel(ledger) },
                 page = it.number,
@@ -120,4 +124,55 @@ class LedgerAccountRepositoryImpl(
         }
     }
 
+}
+
+fun LedgerAccountFilter.toSpecification(): Specification<JpaLedgerAccountEntity> {
+    return LedgerAccountSpecification.withFilter(this)
+}
+
+object LedgerAccountSpecification {
+
+    fun withFilter(filter: LedgerAccountFilter): Specification<JpaLedgerAccountEntity> {
+        return Specification { root, _, criteriaBuilder ->
+            val predicates = mutableListOf<jakarta.persistence.criteria.Predicate>()
+            filter.id?.let {
+                predicates.add(
+                    criteriaBuilder.equal(root.get<UUID>("id"), it)
+                )
+            }
+            filter.name?.let {
+                predicates.add(
+                    criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("name")),
+                        "%${it.lowercase()}%"
+                    )
+                )
+            }
+            filter.description?.let {
+                predicates.add(
+                    criteriaBuilder.like(
+                        criteriaBuilder.lower(root.get("description")),
+                        "%${it.lowercase()}%"
+                    )
+                )
+            }
+            filter.accountType?.let {
+                predicates.add(
+                    criteriaBuilder.equal(
+                        root.get<LedgerAccountType>("accountType"),
+                        it
+                    )
+                )
+            }
+            filter.status?.let {
+                predicates.add(
+                    criteriaBuilder.equal(
+                        root.get<LedgerAccountStatus>("status"),
+                        it
+                    )
+                )
+            }
+            criteriaBuilder.and(*predicates.toTypedArray())
+        }
+    }
 }

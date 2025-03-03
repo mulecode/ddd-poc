@@ -4,6 +4,7 @@ import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
+import uk.co.mulecode.ddd.domain.model.UserFilter
 import uk.co.mulecode.ddd.domain.model.UserModel
 import uk.co.mulecode.ddd.domain.model.UserStatus
 import java.util.UUID
@@ -36,11 +37,11 @@ data class UserDto(
 }
 
 data class UserFilterRequest(
-    val id: UUID? = null,
-    val name: String? = null,
-    val email: String? = null,
-    val status: UserStatus? = null,
-)
+    override val id: UUID? = null,
+    override val name: String? = null,
+    override val email: String? = null,
+    override val status: UserStatus? = null,
+) : UserFilter
 
 data class UserRegistrationRequest(
     @field:NotBlank(message = "Name is required")

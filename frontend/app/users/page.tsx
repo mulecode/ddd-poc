@@ -80,26 +80,26 @@ export default function UsersPage() {
                               defaultFilter="name"
                               onSearch={handleSearch}/>
                 {/* List of Users */}
-                <table className="min-w-full border border-gray-700 bg-white">
-                    <thead className="bg-gray-800 text-white">
+                <table className="min-w-full border border-gray-500 bg-white">
+                    <thead className="bg-gray-500 text-white">
                     <tr>
-                        <th className="py-2 px-4 border-b border-gray-700 text-left w-2/6">ID</th>
-                        <th className="py-2 px-4 border-b border-gray-700 text-left w-2/6">Name</th>
-                        <th className="py-2 px-4 border-b border-gray-700 text-left w-2/6">Email</th>
+                        <th className="py-2 px-4 border-b border-gray-400 text-left w-2/6">ID</th>
+                        <th className="py-2 px-4 border-b border-gray-400 text-left w-2/6">Name</th>
+                        <th className="py-2 px-4 border-b border-gray-400 text-left w-2/6">Email</th>
                     </tr>
                     </thead>
                     <tbody>
                     {users.map((user) => (
-                        <tr key={user.id} className="hover:bg-gray-400">
-                            <td className="py-2 px-4 border-b border-gray-700 w-2/6">
+                        <tr key={user.id} className="hover:bg-gray-300">
+                            <td className="py-2 px-4 border-b border-gray-500 w-2/6">
                                 <Link href={`/users/${user.id}`}>
                                     {user.id}
                                 </Link>
                             </td>
-                            <td className="py-2 px-4 border-b border-gray-700 w-2/6">
+                            <td className="py-2 px-4 border-b border-gray-500 w-2/6">
                                 {user.name}
                             </td>
-                            <td className="py-2 px-4 border-b border-gray-700 w-2/6">
+                            <td className="py-2 px-4 border-b border-gray-500 w-2/6">
                                 {user.email}
                             </td>
                         </tr>
