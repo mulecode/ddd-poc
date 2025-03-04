@@ -5,9 +5,10 @@ import AppTitle from "@/app/components/AppTitle";
 import AppButton from "@/app/components/AppButton";
 import AppTableNav from "@/app/components/AppTableNav";
 import Image from "next/image";
-import Link from "next/link";
 import AppFilterBar from "@/app/components/AppFilterBar";
 import {AppSelectItem} from "@/app/components/AppFormSelect";
+import AppTableData from "@/app/components/AppTableData";
+import AppTableSummary from "@/app/components/AppTableSummary";
 
 interface User {
     id: string;
@@ -80,55 +81,27 @@ export default function UsersPage() {
                               defaultFilter="name"
                               onSearch={handleSearch}/>
                 {/* List of Users */}
-                <table className="min-w-full bg-white">
-                    <thead className="text-gray-600 border-b-2 border-gray-400">
-                    <tr>
-                        <th className="py-2 px-4 text-left w-2/6">ID</th>
-                        <th className="py-2 px-4 text-left w-2/6">Name</th>
-                        <th className="py-2 px-4 text-left w-2/6">Email</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {users.map((user) => (
-                        <tr key={user.id} className="hover:bg-gray-300 border-b-1 border-gray-300">
-                            <td className="py-2 px-4 text-xs w-2/6">
-                                <Link href={`/users/${user.id}`}>
-                                    {user.id}
-                                </Link>
-                            </td>
-                            <td className="py-2 px-4 w-2/6">
-                                {user.name}
-                            </td>
-                            <td className="py-2 px-4 w-2/6">
-                                {user.email}
-                            </td>
-                        </tr>
-                    ))}
-                    </tbody>
-                </table>
+                <AppTableData
+                    headers={["ID", "Name", "Email"]}
+                    columnWidths={["w-2/6", "w-2/6", "w-2/6"]}
+                    columnCss={["text-xs", "", ""]}
+                    data={users}
+                    linkBaseUrl="/users"
+                />
                 {/* Tables footer */}
                 <div className="flex flex-wrap gap-4 w-full text-white">
                     {/* Pagination Summary */}
-                    <div className="flex-1 w-full min-w-[300px] p-4 ">
-                        <p className="text-sm text-gray-500">
-                            Showing
-                            <span className="font-medium"> {currentPage * pageSize + 1} </span>
-                            to
-                            <span
-                                className="font-medium"> {Math.min((currentPage + 1) * pageSize, totalElements)} </span>
-                            of
-                            <span className="font-medium"> {totalElements} </span> results
-                        </p>
-                    </div>
-
+                    <AppTableSummary
+                        currentPage={currentPage}
+                        pageSize={pageSize}
+                        totalElements={totalElements}
+                    />
                     {/* Pagination Controls in Second Column */}
                     <div className="flex-1 w-full min-w-[300px] p-4 flex justify-end">
                         <AppTableNav
                             currentPage={currentPage}
                             totalPages={totalPages}
-                            previousPageAction={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
-                            nextPageAction={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1))}
-                            indexPageAction={(index) => setCurrentPage(index)}
+                            setCurrentPage={(page) => setCurrentPage(page)}
                         />
                     </div>
                 </div>

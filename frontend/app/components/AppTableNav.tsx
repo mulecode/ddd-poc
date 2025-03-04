@@ -5,18 +5,27 @@ import clsx from "clsx";
 interface AppTableNavProps {
     currentPage: number;
     totalPages: number;
-    previousPageAction: () => void;
-    nextPageAction: () => void;
-    indexPageAction: (index: number) => void;
+    setCurrentPage: (page: number) => void;
 }
 
 const AppTableNav: React.FC<AppTableNavProps> = ({
                                                      currentPage = 0,
                                                      totalPages = 0,
-                                                     previousPageAction,
-                                                     nextPageAction,
-                                                     indexPageAction
+                                                     setCurrentPage,
                                                  }) => {
+
+    const previousPageAction = () => {
+        setCurrentPage(Math.max(currentPage - 1, 0));
+    };
+
+    const nextPageAction = () => {
+        setCurrentPage(Math.min(currentPage + 1, totalPages - 1));
+    };
+
+    const indexPageAction = (index: number) => {
+        setCurrentPage(index);
+    };
+
     return (
         <nav
             className="isolate inline-flex gap-2 shadow-xs"

@@ -1,8 +1,6 @@
 "use client";
 import AppTitle from "@/app/components/AppTitle";
 import {useRouter} from "next/navigation";
-import Link from "next/link";
-import Image from "next/image";
 import AppBentoItem from "@/app/components/AppBentoItem";
 
 export default function Home() {

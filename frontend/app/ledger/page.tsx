@@ -5,9 +5,10 @@ import AppTitle from "@/app/components/AppTitle";
 import AppButton from "@/app/components/AppButton";
 import AppTableNav from "@/app/components/AppTableNav";
 import Image from "next/image";
-import Link from "next/link";
 import AppFilterBar from "@/app/components/AppFilterBar";
 import {AppSelectItem} from "@/app/components/AppFormSelect";
+import AppTableSummary from "@/app/components/AppTableSummary";
+import AppTableData from "@/app/components/AppTableData";
 
 interface Ledger {
     id: string;
@@ -79,59 +80,28 @@ export default function LedgerPage() {
                 <AppFilterBar filters={filters}
                               defaultFilter="name"
                               onSearch={handleSearch}/>
-                <table className="min-w-full bg-white">
-                    <thead className="text-gray-600 border-b-2 border-gray-400">
-                    <tr>
-                        <th className="py-2 px-4 text-left w-2/8">ID</th>
-                        <th className="py-2 px-4 text-left w-2/8">Name</th>
-                        <th className="py-2 px-4 text-left w-2/8">Description</th>
-                        <th className="py-2 px-4 text-left w-2/8">Type</th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {ledger.map((item) => (
-                        <tr key={item.id} className="hover:bg-gray-300 border-b-1 border-gray-300">
-                            <td className="py-2 px-4 text-xs w-2/8">
-                                <Link href={`/ledger/${item.id}`}>
-                                    {item.id}
-                                </Link>
-                            </td>
-                            <td className="py-2 px-4 w-2/8">
-                                {item.name}
-                            </td>
-                            <td className="py-2 px-4 w-2/8">
-                                {item.description}
-                            </td>
-                            <td className="py-2 px-4 w-2/8">
-                                {item.type}
-                            </td>
-                        </tr>
-                    ))}
-                    </tbody>
-                </table>
+
+                <AppTableData
+                    headers={["ID", "Name", "Description", "Type"]}
+                    columnWidths={["w-2/8", "w-2/8", "w-2/8", "w-2/8"]}
+                    columnCss={["text-xs", "", "", ""]}
+                    data={ledger}
+                    linkBaseUrl="/ledger"
+                />
                 {/* Tables footer */}
                 <div className="flex flex-wrap gap-4 w-full text-white">
                     {/* Pagination Summary */}
-                    <div className="flex-1 w-full min-w-[300px] p-4 ">
-                        <p className="text-sm text-gray-500">
-                            Showing
-                            <span className="font-medium"> {currentPage * pageSize + 1} </span>
-                            to
-                            <span
-                                className="font-medium"> {Math.min((currentPage + 1) * pageSize, totalElements)} </span>
-                            of
-                            <span className="font-medium"> {totalElements} </span> results
-                        </p>
-                    </div>
-
+                    <AppTableSummary
+                        currentPage={currentPage}
+                        pageSize={pageSize}
+                        totalElements={totalElements}
+                    />
                     {/* Pagination Controls in Second Column */}
                     <div className="flex-1 w-full min-w-[300px] p-4 flex justify-end">
                         <AppTableNav
                             currentPage={currentPage}
                             totalPages={totalPages}
-                            previousPageAction={() => setCurrentPage((prev) => Math.max(prev - 1, 0))}
-                            nextPageAction={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages - 1))}
-                            indexPageAction={(index) => setCurrentPage(index)}
+                            setCurrentPage={(page) => setCurrentPage(page)}
                         />
                     </div>
                 </div>
