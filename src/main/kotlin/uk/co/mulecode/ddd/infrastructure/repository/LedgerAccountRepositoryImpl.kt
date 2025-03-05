@@ -37,13 +37,15 @@ class LedgerAccountRepositoryImpl(
         val account = jpaLedgerAccountRepository.findByIdOrNull(id)
             ?: throw IllegalArgumentException("Ledger Account not found for id $id")
 
-        val lastRecord = jpaLedgerRecordRepository.findTopByPayerAccountIdOrderByCreatedDateDesc(account.id)
+        val lastRecord = jpaLedgerRecordRepository.findTopByPayerAccountIdOrderByIdDesc(account.id)
+        log.debug { "LastRecord: $lastRecord" }
 
         val history = historySize
             ?.takeIf { it > 0 }
             ?.let {
-                jpaLedgerRecordRepository.findAllByPayerAccountIdOrderByCreatedDateDesc(
-                    accountId = account.id, page = Pageable.ofSize(it)
+                jpaLedgerRecordRepository.findAllByPayerAccountIdOrderByIdDesc(
+                    accountId = account.id,
+                    page = Pageable.ofSize(it)
                 )
             }
 
@@ -55,7 +57,7 @@ class LedgerAccountRepositoryImpl(
                     ?: throw IllegalStateException("Ledger Record does not have a creation date")
             ),
             history = history?.content
-                ?.sortedBy { it.createdDate }
+                ?.sortedBy { it.id }
                 ?.zipWithNext { previous, current ->
                     LedgerRecordModel(
                         data = current,
@@ -70,8 +72,8 @@ class LedgerAccountRepositoryImpl(
     @Transactional
     override fun save(model: LedgerAccountModel): LedgerAccountModel {
         log.debug { "Saving LedgerAccountModel: ${model.data.id}" }
-        val entity = if (model.data is JpaLedgerAccountRepository) {
-            jpaLedgerAccountRepository.save(model.data as JpaLedgerAccountEntity)
+        val entity = if (model.data is JpaLedgerAccountEntity) {
+            jpaLedgerAccountRepository.save(model.data)
         } else {
             jpaLedgerAccountRepository.save(
                 JpaLedgerAccountEntity(
