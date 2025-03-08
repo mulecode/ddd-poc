@@ -27,13 +27,14 @@ class ProductService(
         log.debug { "Creating new product: $newProduct" }
         return productRepository.save(
             ProductModel.create(
-                upcCode = newProduct.upcCode,
+                manufacturer = newProduct.manufacturer,
                 supplier = newProduct.supplier,
                 brand = newProduct.brand,
                 name = newProduct.name,
                 description = newProduct.description,
                 category = newProduct.category,
                 subCategory = newProduct.subCategory,
+                originCountryCode = newProduct.originCountryCode,
             )
         ).dto()
     }

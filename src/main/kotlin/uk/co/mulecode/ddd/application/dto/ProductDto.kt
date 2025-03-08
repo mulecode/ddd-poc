@@ -7,7 +7,7 @@ import uk.co.mulecode.ddd.domain.model.ProductStatus
 import java.util.UUID
 
 
-data class  ProductListDto(
+data class ProductListDto(
     val products: List<ProductDto>,
     val page: Int,
     val totalPages: Int,
@@ -17,20 +17,22 @@ data class  ProductListDto(
 
 data class ProductDto(
     val id: UUID,
-    val upcCode: String,
+    val code: String,
+    val manufacturer: String,
     var supplier: String,
     var brand: String,
     var name: String,
     var description: String,
     var category: String,
     var subCategory: String,
+    var originCountryCode: String,
     var status: ProductStatus,
 )
 
 data class ProductRegistrationRequest(
-    @field:NotBlank(message = "UPC is required")
-    @field:Size(min = 5, max = 50, message = "Upc must be between 5 and 50 characters")
-    val upcCode: String,
+    @field:NotBlank(message = "manufacturer is required")
+    @field:Size(min = 5, max = 50, message = "manufacturer must be between 5 and 50 characters")
+    val manufacturer: String,
 
     @field:NotBlank(message = "Supplier is required")
     @field:Size(min = 5, max = 50, message = "Supplier must be between 5 and 50 characters")
@@ -55,19 +57,25 @@ data class ProductRegistrationRequest(
     @field:NotBlank(message = "subCategory is required")
     @field:Size(min = 5, max = 50, message = "subCategory must be between 5 and 254 characters")
     val subCategory: String,
+
+    @field:NotBlank(message = "originCountryCode is required")
+    @field:Size(min = 2, max = 2, message = "originCountryCode must be between 5 and 2 characters")
+    val originCountryCode: String,
 )
 
 
 fun ProductModel.dto(): ProductDto {
     return ProductDto(
         id = this.product.id,
-        upcCode = this.product.upcCode,
+        code = this.product.code,
+        manufacturer = this.product.manufacturer,
         supplier = this.product.supplier,
         brand = this.product.brand,
         name = this.product.name,
         description = this.product.description,
         category = this.product.category,
         subCategory = this.product.subCategory,
+        originCountryCode = this.product.originCountryCode,
         status = this.product.status,
     )
 }

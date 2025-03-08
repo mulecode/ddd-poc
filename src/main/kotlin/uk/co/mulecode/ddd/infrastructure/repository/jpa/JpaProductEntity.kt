@@ -19,9 +19,12 @@ class JpaProductEntity(
     @Column(name = "id", unique = true, updatable = false, nullable = false)
     override val id: UUID,
     @NotBlank
+    @Column(name = "code", unique = true, updatable = false, nullable = false)
+    override val code: String,
+    @NotBlank
     @Size(min = 5, max = 50)
-    @Column(name = "upc_code", unique = true, updatable = true, nullable = false)
-    override val upcCode: String,
+    @Column(name = "manufacturer", unique = false, updatable = true, nullable = false)
+    override val manufacturer: String,
     @NotBlank
     @Size(min = 5, max = 50)
     @Column(name = "supplier", unique = false, updatable = true, nullable = false)
@@ -46,6 +49,10 @@ class JpaProductEntity(
     @Size(min = 5, max = 50)
     @Column(name = "sub_category", unique = false, updatable = true, nullable = false)
     override var subCategory: String,
+    @NotBlank
+    @Size(min = 2, max = 2)
+    @Column(name = "origin_country_code", unique = false, updatable = true, nullable = false)
+    override var originCountryCode: String,
     @Enumerated(EnumType.STRING)
     override var status: ProductStatus,
 ) : Product, JpaAuditingBase()

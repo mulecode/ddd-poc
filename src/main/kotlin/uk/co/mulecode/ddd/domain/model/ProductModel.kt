@@ -1,5 +1,6 @@
 package uk.co.mulecode.ddd.domain.model
 
+import uk.co.mulecode.ddd.infrastructure.utils.IdentificationGenerator.Companion.randomBase36Id
 import uk.co.mulecode.ddd.infrastructure.utils.IdentificationGenerator.Companion.sortedUuid
 import java.math.BigDecimal
 import java.util.UUID
@@ -47,55 +48,59 @@ interface SellingDetails {
 
 interface ProductFilter {
     val id: UUID?
-    val upcCode: String?
+    val code: String?
+    var manufacturer: String?
     var supplier: String?
     var brand: String?
     var name: String?
     var description: String?
     var category: String?
     var subCategory: String?
+    var originCountryCode: String?
     var status: ProductStatus?
 }
 
 interface Product {
     val id: UUID
-    val upcCode: String
+    val code: String
+    val manufacturer: String
     var supplier: String
     var brand: String
     var name: String
     var description: String
     var category: String
     var subCategory: String
+    var originCountryCode: String
     var status: ProductStatus
 }
 
 class ProductModel(
     val product: Product,
-    var sellingDetails: SellingDetails? = null,
-    var dimensions: Dimensions? = null,
-    var inventory: Inventory? = null
 ) : BaseModel() {
 
     companion object {
         @JvmStatic
         fun create(
-            upcCode: String,
+            manufacturer: String,
             supplier: String,
             brand: String,
             name: String,
             description: String,
             category: String,
             subCategory: String,
+            originCountryCode: String,
         ) = ProductModel(
             product = object : Product {
                 override val id: UUID = sortedUuid()
-                override val upcCode: String = upcCode
+                override val code: String = randomBase36Id()
+                override val manufacturer: String = manufacturer
                 override var supplier: String = supplier
                 override var brand: String = brand
                 override var name: String = name
                 override var description: String = description
                 override var category: String = category
                 override var subCategory: String = subCategory
+                override var originCountryCode: String = originCountryCode
                 override var status: ProductStatus = ProductStatus.INACTIVE
             }
         )

@@ -70,7 +70,8 @@ class ProductRepositoryImpl(
 fun ProductModel.productJpaEntity(): JpaProductEntity {
     return JpaProductEntity(
         id = this.product.id,
-        upcCode = this.product.upcCode,
+        code = this.product.code,
+        manufacturer = this.product.manufacturer,
         supplier = this.product.supplier,
         brand = this.product.brand,
         name = this.product.name,
@@ -78,6 +79,7 @@ fun ProductModel.productJpaEntity(): JpaProductEntity {
         category = this.product.category,
         subCategory = this.product.subCategory,
         status = this.product.status,
+        originCountryCode = this.product.originCountryCode,
     )
 }
 
@@ -90,7 +92,8 @@ object ProductSpecification {
         return Specification { root, _, criteriaBuilder ->
             val predicates = mutableListOf<Predicate>()
             filter.id?.let { predicates.add(criteriaBuilder.equal(root.get<UUID>("id"), it)) }
-            filter.upcCode?.let { predicates.add(criteriaBuilder.equal(root.get<String>("upcCode"), it)) }
+            filter.code?.let { predicates.add(criteriaBuilder.equal(root.get<String>("code"), it)) }
+            filter.manufacturer?.let { predicates.add(criteriaBuilder.equal(root.get<String>("manufacturer"), it)) }
             filter.supplier?.let { predicates.add(criteriaBuilder.equal(root.get<String>("supplier"), it)) }
             filter.brand?.let { predicates.add(criteriaBuilder.equal(root.get<String>("brand"), it)) }
             filter.name?.let { predicates.add(criteriaBuilder.equal(root.get<String>("name"), it)) }
@@ -99,6 +102,14 @@ object ProductSpecification {
             }
             filter.category?.let { predicates.add(criteriaBuilder.equal(root.get<String>("category"), it)) }
             filter.subCategory?.let { predicates.add(criteriaBuilder.equal(root.get<String>("subCategory"), it)) }
+            filter.originCountryCode?.let {
+                predicates.add(
+                    criteriaBuilder.equal(
+                        root.get<String>("originCountryCode"),
+                        it
+                    )
+                )
+            }
             filter.status?.let { predicates.add(criteriaBuilder.equal(root.get<ProductStatus>("status"), it)) }
             criteriaBuilder.and(*predicates.toTypedArray())
         }
