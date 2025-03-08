@@ -1,6 +1,7 @@
 package uk.co.mulecode.ddd.interfaces.controller
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import jakarta.validation.ConstraintViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.FieldError
@@ -21,6 +22,22 @@ class AppControllerAdvice {
         ex.bindingResult.allErrors.forEach { error ->
             val fieldName = (error as FieldError).field
             val errorMessage = error.defaultMessage
+            errors[fieldName] = errorMessage
+        }
+        val response = mutableMapOf<String, Any?>()
+        response["message"] = "Validation failed"
+        response["errors"] = errors
+        response["status"] = HttpStatus.BAD_REQUEST.value()
+        return ResponseEntity(response, HttpStatus.BAD_REQUEST)
+    }
+
+    @ExceptionHandler(ConstraintViolationException::class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    fun handleConstraintViolationExceptions(ex: ConstraintViolationException): ResponseEntity<Map<String, Any?>> {
+        val errors = mutableMapOf<String, String?>()
+        ex.constraintViolations.forEach { violation ->
+            val fieldName = violation.propertyPath.toString()
+            val errorMessage = violation.message
             errors[fieldName] = errorMessage
         }
         val response = mutableMapOf<String, Any?>()

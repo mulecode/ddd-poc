@@ -1,6 +1,5 @@
 "use client"
 import React from "react";
-import clsx from "clsx";
 
 interface AppButtonProps {
     type?: "button" | "submit" | "reset";

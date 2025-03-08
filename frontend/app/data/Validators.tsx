@@ -25,14 +25,31 @@ export const AppValidate = (
 
         if (validator.required && !value) {
             fieldErrors.push("This field is required.");
-        } else if (validator.min !== undefined && value.length < validator.min) {
+        }
+        if (validator.min !== undefined && typeof value === 'string' && value.length < validator.min) {
             fieldErrors.push(`Minimum length is ${validator.min}.`);
-        } else if (validator.max !== undefined && value.length > validator.max) {
+        }
+        if (validator.max !== undefined && typeof value === 'string' && value.length > validator.max) {
             fieldErrors.push(`Maximum length is ${validator.max}.`);
-        } else if (validator.regex && !validator.regex.test(value)) {
+        }
+        if (validator.regex && typeof value === 'string' && !validator.regex.test(value)) {
             fieldErrors.push("Invalid format.");
-        } else if (validator.format === "email" && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+        }
+        if (validator.format === "email" && typeof value === 'string' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
             fieldErrors.push("Invalid email format.");
+        }
+        if (validator.format === "alphanumeric" && typeof value === 'string' && !/^[a-zA-Z0-9 ]*$/.test(value)) {
+            fieldErrors.push("Only text and numbers characters are allowed.");
+        }
+        if (validator.format === "positive-numbers") {
+            if (!/^\d+(\.\d{1,2})?$/.test(value)) {
+                fieldErrors.push("Value must be a valid number.");
+            } else {
+                const numberValue = parseFloat(value);
+                if (numberValue <= 0) {
+                    fieldErrors.push("Only positive numbers are allowed.");
+                }
+            }
         }
 
         if (fieldErrors.length > 0) {

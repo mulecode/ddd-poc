@@ -10,7 +10,7 @@ interface AppFormInputProps {
     description?: string;
     type: string;
     required?: boolean;
-    value: string;
+    value: string | number;
     errors?: string[];
     className?: string;
     placeholder?: string;
@@ -52,7 +52,7 @@ const AppFormInput: React.FC<AppFormInputProps> = ({
                        'border-b-2 border-gray-500',
                        'focus:border-blue-500',
                        'bg-gray-200',
-                       (errors && errors.length > 0) ? 'border-red-500' : ''
+                       (errors && errors.length > 0) ? 'border-red-500 focus:border-red-500' : ''
                    )}
             />
             {errors && errors.length > 0 && (
