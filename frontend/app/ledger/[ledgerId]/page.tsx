@@ -105,7 +105,7 @@ export default function LedgerViewPage() {
 
                             <span className="text-gray-700">Balance:</span>
                             <span className="text-lg font-semibold text-gray-900">
-                                £{ledgerModel.balance.toLocaleString()}
+                                {ledgerModel.balance.toLocaleString()}
                             </span>
                         </div>
                         <h2 className="text-1xl font-bold text-gray-800 pt-5">History</h2>

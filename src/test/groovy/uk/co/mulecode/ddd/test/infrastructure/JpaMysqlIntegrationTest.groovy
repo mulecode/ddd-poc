@@ -8,7 +8,7 @@ import java.sql.Connection
 
 class JpaMysqlIntegrationTest extends IntegrationTest {
 
-    private static final int TOTAL_TABLES = 3
+    private static final int TOTAL_TABLES = 5
 
     @Autowired
     private DataSource dataSource
@@ -29,6 +29,6 @@ class JpaMysqlIntegrationTest extends IntegrationTest {
         }
 
         then:
-        assert tableCount > TOTAL_TABLES: "Expected at least ${TOTAL_TABLES} tables, but found ${tableCount}. Migration might have failed."
+        assert tableCount == TOTAL_TABLES: "Expected at least ${TOTAL_TABLES} tables, but found ${tableCount}. Migration might have failed."
     }
 }

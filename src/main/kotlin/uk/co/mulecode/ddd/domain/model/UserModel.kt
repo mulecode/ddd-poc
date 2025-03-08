@@ -24,9 +24,7 @@ interface User {
 }
 
 class UserModel(
-    val data: User,
-    val page: Int? = 0,
-    val size: Int? = 10
+    val data: User
 ) : BaseModel() {
 
     fun activateUser() {

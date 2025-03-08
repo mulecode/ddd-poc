@@ -18,3 +18,10 @@ abstract class BaseModel {
         domainEvents.add(event)
     }
 }
+
+interface ModelListPageDetails {
+    val page: Int
+    val totalPages: Int
+    val size: Int
+    val totalElements: Long
+}

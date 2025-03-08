@@ -1,6 +1,7 @@
 package uk.co.mulecode.ddd.infrastructure.repository
 
 import io.github.oshai.kotlinlogging.KotlinLogging
+import jakarta.persistence.criteria.Predicate
 import org.springframework.context.ApplicationEventPublisher
 import org.springframework.data.domain.Pageable
 import org.springframework.data.jpa.domain.Specification
@@ -25,7 +26,7 @@ class UserRepositoryImpl(
 
     private val log = KotlinLogging.logger {}
 
-    @Transactional(readOnly = true)
+    @Transactional
     override fun findById(userId: UUID): UserModel {
         log.info { "Repository: Loading user $userId" }
         return jpaUserRepository.findByIdOrNull(userId)
@@ -81,7 +82,7 @@ object UserSpecification {
 
     fun withFilter(filter: UserFilter): Specification<JpaUserEntity> {
         return Specification { root, _, criteriaBuilder ->
-            val predicates = mutableListOf<jakarta.persistence.criteria.Predicate>()
+            val predicates = mutableListOf<Predicate>()
             filter.id?.let { predicates.add(criteriaBuilder.equal(root.get<UUID>("id"), it)) }
             filter.name?.let {
                 predicates.add(

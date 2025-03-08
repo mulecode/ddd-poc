@@ -144,34 +144,22 @@ object LedgerAccountSpecification {
             }
             filter.name?.let {
                 predicates.add(
-                    criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("name")),
-                        "%${it.lowercase()}%"
-                    )
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("name")), "%${it.lowercase()}%")
                 )
             }
             filter.description?.let {
                 predicates.add(
-                    criteriaBuilder.like(
-                        criteriaBuilder.lower(root.get("description")),
-                        "%${it.lowercase()}%"
-                    )
+                    criteriaBuilder.like(criteriaBuilder.lower(root.get("description")), "%${it.lowercase()}%")
                 )
             }
             filter.accountType?.let {
                 predicates.add(
-                    criteriaBuilder.equal(
-                        root.get<LedgerAccountType>("accountType"),
-                        it
-                    )
+                    criteriaBuilder.equal(root.get<LedgerAccountType>("accountType"), it)
                 )
             }
             filter.status?.let {
                 predicates.add(
-                    criteriaBuilder.equal(
-                        root.get<LedgerAccountStatus>("status"),
-                        it
-                    )
+                    criteriaBuilder.equal(root.get<LedgerAccountStatus>("status"), it)
                 )
             }
             criteriaBuilder.and(*predicates.toTypedArray())
