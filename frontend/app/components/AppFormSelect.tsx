@@ -21,6 +21,8 @@ interface AppSelectProps {
     placeholder?: string;
     itemSelected: string;
     items: AppSelectItem[];
+    className?: string;
+    errors?: string[];
     onChange?: (value: string) => void;
 }
 
@@ -29,7 +31,16 @@ export interface AppSelectItem {
     name: string;
 }
 
-const AppFormSelect: React.FC<AppSelectProps> = ({title, description, placeholder, itemSelected, items, onChange}) => {
+const AppFormSelect: React.FC<AppSelectProps> = ({
+                                                     title,
+                                                     description,
+                                                     placeholder,
+                                                     itemSelected,
+                                                     items,
+                                                     className,
+                                                     errors,
+                                                     onChange
+                                                 }) => {
     const [query, setQuery] = useState('');
     const [selected, setSelected] = useState<AppSelectItem>(
         items.find(item => item.id === itemSelected) || {id: '', name: ''}
@@ -46,9 +57,11 @@ const AppFormSelect: React.FC<AppSelectProps> = ({title, description, placeholde
     };
 
     return (
-        <Field className="sm:col-span-3">
+        <Field className={clsx(
+            className
+        )}>
             <Label className="text-sm/6 font-medium">{title}</Label>
-            <Description className="text-sm/6 text-gray-800">{description}</Description>
+            <Description className="text-xs text-gray-500">{description}</Description>
             <Combobox value={selected}
                       name={placeholder}
                       onChange={handleChange}
@@ -60,7 +73,8 @@ const AppFormSelect: React.FC<AppSelectProps> = ({title, description, placeholde
                             'block w-full p-1 outline-none',
                             'border-b-2 border-gray-500',
                             'focus:border-blue-500',
-                            'bg-gray-200'
+                            'bg-gray-200',
+                            (errors && errors.length > 0) ? 'border-red-500 focus:border-red-500' : ''
                         )}
                         displayValue={(item: AppSelectItem) => item?.name || ''}
                         onChange={(e) => setQuery(e.target.value)}
@@ -72,6 +86,13 @@ const AppFormSelect: React.FC<AppSelectProps> = ({title, description, placeholde
                         )}/>
                     </ComboboxButton>
                 </div>
+                {errors && errors.length > 0 && (
+                    <div className="text-red-500 text-xs">
+                        {errors.map((err, index) => (
+                            <div key={index}>{err}</div>
+                        ))}
+                    </div>
+                )}
 
                 <ComboboxOptions
                     anchor="bottom"

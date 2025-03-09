@@ -38,6 +38,9 @@ export const AppValidate = (
         if (validator.format === "email" && typeof value === 'string' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
             fieldErrors.push("Invalid email format.");
         }
+        if (validator.format === "text" && typeof value === 'string' && !/^[a-zA-Z ]*$/.test(value)) {
+            fieldErrors.push("Only text characters are allowed.");
+        }
         if (validator.format === "alphanumeric" && typeof value === 'string' && !/^[a-zA-Z0-9 ]*$/.test(value)) {
             fieldErrors.push("Only text and numbers characters are allowed.");
         }

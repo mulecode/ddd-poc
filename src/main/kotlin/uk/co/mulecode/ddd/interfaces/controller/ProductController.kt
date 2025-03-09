@@ -25,6 +25,13 @@ class ProductController(
     }
 
     @Async("controllerTreadPoolExecutor")
+    override fun updateProduct(productId: UUID, request: ProductRegistrationRequest): CompletableFuture<ProductDto> {
+        return CompletableFuture.completedFuture(
+            productService.updateProduct(productId, request)
+        )
+    }
+
+    @Async("controllerTreadPoolExecutor")
     override fun getProductById(productId: UUID): CompletableFuture<ProductDto> {
         return CompletableFuture.completedFuture(
             productService.getProductById(productId)

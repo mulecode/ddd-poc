@@ -63,7 +63,7 @@ interface ProductFilter {
 interface Product {
     val id: UUID
     val code: String
-    val manufacturer: String
+    var manufacturer: String
     var supplier: String
     var brand: String
     var name: String
@@ -93,7 +93,7 @@ class ProductModel(
             product = object : Product {
                 override val id: UUID = sortedUuid()
                 override val code: String = randomBase36Id()
-                override val manufacturer: String = manufacturer
+                override var manufacturer: String = manufacturer
                 override var supplier: String = supplier
                 override var brand: String = brand
                 override var name: String = name

@@ -3,7 +3,7 @@
 import AppTitle from "@/app/components/AppTitle";
 import React, {useState} from "react";
 import {useRouter} from "next/navigation";
-import AppLedgerCreateForm, {LedgeCreateFormData} from "@/app/ledger/[ledgerId]/AppLedgerCreateForm";
+import AppLedgerCreateForm, {LedgeCreateFormData} from "@/app/ledger/AppLedgerCreateForm";
 
 
 export default function LedgerCreatePage() {

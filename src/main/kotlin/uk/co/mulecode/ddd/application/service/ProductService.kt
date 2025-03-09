@@ -39,6 +39,23 @@ class ProductService(
         ).dto()
     }
 
+    @Transactional
+    fun updateProduct(productId: UUID, updatedProduct: ProductRegistrationRequest): ProductDto {
+        log.debug { "Updating product: $productId" }
+        return productRepository.findById(productId)
+            .let { model ->
+                model.product.name = updatedProduct.name
+                model.product.description = updatedProduct.description
+                model.product.manufacturer = updatedProduct.manufacturer
+                model.product.supplier = updatedProduct.supplier
+                model.product.brand = updatedProduct.brand
+                model.product.category = updatedProduct.category
+                model.product.subCategory = updatedProduct.subCategory
+                model.product.originCountryCode = updatedProduct.originCountryCode
+                productRepository.save(model)
+            }.dto()
+    }
+
     @Transactional(readOnly = true)
     fun getProductById(productId: UUID): ProductDto {
         log.debug { "Getting product by id: $productId" }

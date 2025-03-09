@@ -7,6 +7,7 @@ import Image from "next/image";
 import AppFormSelect from "@/app/components/AppFormSelect";
 import AppFormInput from "@/app/components/AppFormInput";
 import {AppFieldValidators, AppValidate} from "@/app/data/Validators";
+import AppDataView from "@/app/components/AppDataView";
 
 export interface UserFormData {
     id?: string;
@@ -39,6 +40,9 @@ const UserFormDataValidator: AppFieldValidators = {
         min: 5,
         max: 50,
         format: "email"
+    },
+    status: {
+        required: true
     }
 }
 
@@ -80,47 +84,39 @@ const AppUserForm: React.FC<Props> = ({
         }
     }
 
+    const handleInputChange = (field: string, value: any) => {
+        setTouched(true);
+        setFormData((prev: any) => prev ? {
+            ...prev,
+            [field]: value
+        } : prev);
+    };
+
+
     return (
         <div>
             <form onSubmit={onSubmit}>
-                <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 mb-4 pb-4">
+                <AppDataView>
 
                     <AppFormInput title="Name" description="Complete name"
                                   type="text" required={true} value={formData.name}
                                   errors={errors.name}
-                                  onChange={(value) => {
-                                      setTouched(true);
-                                      setFormData((prev: any) => prev ? {
-                                          ...prev,
-                                          name: value
-                                      } : prev);
-                                  }}
+                                  onChange={(value) => handleInputChange("name", value)}
                     />
 
                     <AppFormInput title="Email" description="Email address"
                                   type="email" required={true} value={formData.email}
                                   errors={errors.email}
-                                  onChange={(value) => {
-                                      setTouched(true);
-                                      setFormData((prev: any) => prev ? {
-                                          ...prev,
-                                          email: value
-                                      } : prev);
-                                  }}
+                                  onChange={(value) => handleInputChange("email", value)}
                     />
 
                     <AppFormSelect title="Status" description="User status"
                                    itemSelected={formData.status || 'ACTIVE'} items={userStatuses}
-                                   onChange={(value) => {
-                                       setTouched(true);
-                                       setFormData(prev => prev ? {
-                                           ...prev,
-                                           status: value
-                                       } : prev)
-                                   }}
+                                   errors={errors.status}
+                                   onChange={(value) => handleInputChange("status", value)}
                     />
 
-                </div>
+                </AppDataView>
 
                 <AppActionMenu>
                     <AppButton variant="secondary" onClick={onCancel}>

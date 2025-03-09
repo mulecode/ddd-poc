@@ -2,12 +2,12 @@
 
 import {AppFieldValidators, AppValidate} from "@/app/data/Validators";
 import React, {useEffect, useState} from "react";
-import AppUserForm, {UserFormData} from "@/app/users/AppUserForm";
 import AppFormSelect from "@/app/components/AppFormSelect";
 import AppFormInput from "@/app/components/AppFormInput";
 import AppActionMenu from "@/app/components/AppActionMenu";
 import AppButton from "@/app/components/AppButton";
 import Image from "next/image";
+import AppDataView from "@/app/components/AppDataView";
 
 export interface LedgeCreateFormData {
     name: string;
@@ -76,33 +76,29 @@ const AppLedgerTransactionForm: React.FC<Props> = ({
         onSave(formData);
     }
 
+    const handleInputChange = (field: string, value: any) => {
+        setTouched(true);
+        setFormData((prev: any) => prev ? {
+            ...prev,
+            [field]: value
+        } : prev);
+    };
+
     return (
         <div>
             <form onSubmit={onSubmit}>
-                <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 mb-4 pb-4">
+                <AppDataView>
 
                     <AppFormInput title="Account Name" description="Unique name for the account"
                                   type="text" required={true} value={formData.name}
                                   errors={errors.name}
-                                  onChange={(value) => {
-                                      setTouched(true);
-                                      setFormData((prev: any) => prev ? {
-                                          ...prev,
-                                          name: value
-                                      } : prev);
-                                  }}
+                                  onChange={(value) => handleInputChange("name", value)}
                     />
 
                     <AppFormInput title="Description" description="Description of the account"
                                   type="text" required={true} value={formData.description}
                                   errors={errors.description}
-                                  onChange={(value) => {
-                                      setTouched(true);
-                                      setFormData((prev: any) => prev ? {
-                                          ...prev,
-                                          description: value
-                                      } : prev);
-                                  }}
+                                  onChange={(value) => handleInputChange("description", value)}
                     />
 
                     <AppFormSelect title="Transaction Type" description="Either Debit or Credit"
@@ -114,27 +110,15 @@ const AppLedgerTransactionForm: React.FC<Props> = ({
                                        {id: "REVENUE", name: "Revenue"},
                                        {id: "EXPENSES", name: "Expense"},
                                    ]}
-                                   onChange={(value) => {
-                                       setTouched(true);
-                                       setFormData(prev => prev ? {
-                                           ...prev,
-                                           type: value
-                                       } : prev)
-                                   }}
+                                   onChange={(value) => handleInputChange("type", value)}
                     />
 
                     <AppFormInput title="User ID" description="Association with the account"
                                   type="text" required={true} value={formData.userId}
                                   errors={errors.userId}
-                                  onChange={(value) => {
-                                      setTouched(true);
-                                      setFormData((prev: any) => prev ? {
-                                          ...prev,
-                                          userId: value
-                                      } : prev);
-                                  }}
+                                  onChange={(value) => handleInputChange("userId", value)}
                     />
-                </div>
+                </AppDataView>
                 <AppActionMenu>
                     <AppButton variant="secondary" onClick={onCancel}>
                         Cancel

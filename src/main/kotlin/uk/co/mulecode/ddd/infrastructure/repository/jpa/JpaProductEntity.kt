@@ -24,7 +24,7 @@ class JpaProductEntity(
     @NotBlank
     @Size(min = 5, max = 50)
     @Column(name = "manufacturer", unique = false, updatable = true, nullable = false)
-    override val manufacturer: String,
+    override var manufacturer: String,
     @NotBlank
     @Size(min = 5, max = 50)
     @Column(name = "supplier", unique = false, updatable = true, nullable = false)

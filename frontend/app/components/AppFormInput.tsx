@@ -32,18 +32,16 @@ const AppFormInput: React.FC<AppFormInputProps> = ({
                                                    }: AppFormInputProps) => {
     return (
         <Field className={clsx(
-            className,
-            "sm:col-span-3"
+            className
         )}>
             <Label className={clsx(
                 className,
                 "text-sm-6 font-medium"
             )}>{title}</Label>
-            <Description className="text-sm-6 text-gray-800">{description}</Description>
+            <Description className="text-xs text-gray-500">{description}</Description>
             <Input name="name" value={value}
                    required={required}
                    type={type}
-
                    onChange={(e) => onChange(e.target.value)}
                    onKeyDown={onKeyDown}
                    placeholder={placeholder}
@@ -56,7 +54,7 @@ const AppFormInput: React.FC<AppFormInputProps> = ({
                    )}
             />
             {errors && errors.length > 0 && (
-                <div className="text-red-500 text-sm-6">
+                <div className="text-red-500 text-xs">
                     {errors.map((err, index) => (
                         <div key={index}>{err}</div>
                     ))}
