@@ -7,5 +7,12 @@ import java.util.UUID
 
 
 @Repository
-interface JpaProductRepository : JpaRepository<JpaProductEntity, UUID>, JpaSpecificationExecutor<JpaProductEntity> {
+interface JpaProductRepository : JpaRepository<JpaProductEntity, UUID>,
+    JpaSpecificationExecutor<JpaProductEntity>
+
+
+@Repository
+interface JpaProductVariationRepository : JpaRepository<JpaProductVariationEntity, UUID>,
+    JpaSpecificationExecutor<JpaProductVariationEntity> {
+    fun findAllByProductId(productId: UUID): List<JpaProductVariationEntity>
 }

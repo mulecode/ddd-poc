@@ -4,6 +4,9 @@ import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
 import uk.co.mulecode.ddd.domain.model.ProductModel
 import uk.co.mulecode.ddd.domain.model.ProductStatus
+import uk.co.mulecode.ddd.domain.model.ProductVariationModel
+import uk.co.mulecode.ddd.domain.model.ProductVariationStatus
+import uk.co.mulecode.ddd.infrastructure.validator.ValidUPC
 import java.util.UUID
 
 
@@ -27,6 +30,15 @@ data class ProductDto(
     var subCategory: String,
     var originCountryCode: String,
     var status: ProductStatus,
+    var variations: List<ProductVariationDto>? = null,
+)
+
+data class ProductVariationDto(
+    var id: UUID,
+    var upcCode: String,
+    var name: String,
+    var description: String,
+    var status: ProductVariationStatus,
 )
 
 data class ProductRegistrationRequest(
@@ -63,6 +75,29 @@ data class ProductRegistrationRequest(
     val originCountryCode: String,
 )
 
+data class ProductVariationRegistrationRequest(
+    @field:NotBlank(message = "upc is required")
+    @field:ValidUPC(message = "upc is invalid")
+    val upcCode: String,
+
+    @field:NotBlank(message = "name is required")
+    @field:Size(min = 5, max = 50, message = "name must be between 5 and 50 characters")
+    val name: String,
+
+    @field:NotBlank(message = "description is required")
+    @field:Size(min = 5, max = 254, message = "description must be between 5 and 254 characters")
+    val description: String,
+)
+
+data class ProductVariationUpdateRequest(
+    @field:NotBlank(message = "name is required")
+    @field:Size(min = 5, max = 50, message = "name must be between 5 and 50 characters")
+    val name: String,
+
+    @field:NotBlank(message = "description is required")
+    @field:Size(min = 5, max = 254, message = "description must be between 5 and 254 characters")
+    val description: String,
+)
 
 fun ProductModel.dto(): ProductDto {
     return ProductDto(
@@ -77,5 +112,16 @@ fun ProductModel.dto(): ProductDto {
         subCategory = this.product.subCategory,
         originCountryCode = this.product.originCountryCode,
         status = this.product.status,
+        variations = this.variations?.map { it.dto() }
+    )
+}
+
+fun ProductVariationModel.dto(): ProductVariationDto {
+    return ProductVariationDto(
+        id = this.productVariation.id,
+        upcCode = this.productVariation.upcCode,
+        name = this.productVariation.name,
+        description = this.productVariation.description,
+        status = this.productVariation.status
     )
 }

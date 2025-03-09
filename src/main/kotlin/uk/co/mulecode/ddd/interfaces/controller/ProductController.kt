@@ -6,6 +6,8 @@ import org.springframework.stereotype.Component
 import uk.co.mulecode.ddd.application.dto.ProductDto
 import uk.co.mulecode.ddd.application.dto.ProductListDto
 import uk.co.mulecode.ddd.application.dto.ProductRegistrationRequest
+import uk.co.mulecode.ddd.application.dto.ProductVariationRegistrationRequest
+import uk.co.mulecode.ddd.application.dto.ProductVariationUpdateRequest
 import uk.co.mulecode.ddd.application.service.ProductService
 import uk.co.mulecode.ddd.domain.model.ProductFilter
 import uk.co.mulecode.ddd.interfaces.api.ProductApi
@@ -42,6 +44,27 @@ class ProductController(
     override fun getAllProducts(queryParams: ProductFilter, pageable: Pageable): CompletableFuture<ProductListDto> {
         return CompletableFuture.completedFuture(
             productService.getAllProducts(pageable, queryParams)
+        )
+    }
+
+    @Async("controllerTreadPoolExecutor")
+    override fun registerProductVariation(
+        productId: UUID,
+        request: ProductVariationRegistrationRequest
+    ): CompletableFuture<ProductDto> {
+        return CompletableFuture.completedFuture(
+            productService.registerVariation(productId, request)
+        )
+    }
+
+    @Async("controllerTreadPoolExecutor")
+    override fun updateProductVariation(
+        productId: UUID,
+        variationId: UUID,
+        request: ProductVariationUpdateRequest
+    ): CompletableFuture<ProductDto> {
+        return CompletableFuture.completedFuture(
+            productService.updateProductVariation(productId, variationId, request)
         )
     }
 }

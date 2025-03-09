@@ -7,9 +7,13 @@ import jakarta.persistence.Enumerated
 import jakarta.persistence.Id
 import jakarta.persistence.Table
 import jakarta.validation.constraints.NotBlank
+import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 import uk.co.mulecode.ddd.domain.model.Product
 import uk.co.mulecode.ddd.domain.model.ProductStatus
+import uk.co.mulecode.ddd.domain.model.ProductVariation
+import uk.co.mulecode.ddd.domain.model.ProductVariationStatus
+import uk.co.mulecode.ddd.infrastructure.validator.ValidUPC
 import java.util.UUID
 
 @Entity
@@ -56,3 +60,29 @@ class JpaProductEntity(
     @Enumerated(EnumType.STRING)
     override var status: ProductStatus,
 ) : Product, JpaAuditingBase()
+
+
+@Entity
+@Table(name = "product_variation")
+class JpaProductVariationEntity(
+    @Id
+    @Column(name = "id", unique = true, updatable = false, nullable = false)
+    override val id: UUID,
+    @NotNull
+    @Column(name = "product_id", unique = false, updatable = false, nullable = false)
+    val productId: UUID,
+    @NotBlank
+    @ValidUPC
+    @Column(name = "upc_code", unique = true, updatable = true, nullable = false)
+    override val upcCode: String,
+    @NotBlank
+    @Size(min = 5, max = 50)
+    @Column(name = "name", unique = true, updatable = true, nullable = false)
+    override var name: String,
+    @NotBlank
+    @Size(min = 5, max = 254)
+    @Column(name = "description", unique = false, updatable = true, nullable = false)
+    override var description: String,
+    @Enumerated(EnumType.STRING)
+    override var status: ProductVariationStatus
+) : ProductVariation, JpaAuditingBase()

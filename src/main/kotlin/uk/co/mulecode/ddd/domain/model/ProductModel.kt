@@ -17,6 +17,11 @@ enum class ProductStatus {
     INACTIVE
 }
 
+enum class ProductVariationStatus {
+    ACTIVE,
+    INACTIVE
+}
+
 enum class ProductTaxCategory {
     STANDARD,
     REDUCED,
@@ -74,9 +79,29 @@ interface Product {
     var status: ProductStatus
 }
 
+interface ProductVariation {
+    val id: UUID
+    val upcCode: String
+    var name: String
+    var description: String
+    var status: ProductVariationStatus
+}
+
+
 class ProductModel(
     val product: Product,
+    val variations: List<ProductVariationModel>? = null,
 ) : BaseModel() {
+
+    val prospectVariations = mutableListOf<ProductVariationModel>()
+
+    fun addVariation(variation: ProductVariationModel) {
+        prospectVariations.add(variation)
+    }
+
+    fun updateVariarionDetails(variationId: UUID, name: String, description: String) {
+        variations?.find { it.productVariation.id == variationId }?.updateDetails(name, description)
+    }
 
     companion object {
         @JvmStatic
@@ -111,3 +136,33 @@ class ProductListModel(
     val data: List<ProductModel>,
     val pagination: ModelListPageDetails
 )
+
+class ProductVariationModel(
+    val productVariation: ProductVariation,
+) : BaseModel() {
+
+    fun updateDetails(
+        name: String,
+        description: String,
+    ) {
+        productVariation.name = name
+        productVariation.description = description
+    }
+
+    companion object {
+        @JvmStatic
+        fun create(
+            upc: String,
+            name: String,
+            description: String,
+        ) = ProductVariationModel(
+            productVariation = object : ProductVariation {
+                override val id: UUID = UUID.randomUUID()
+                override val upcCode: String = upc
+                override var name: String = name
+                override var description: String = description
+                override var status: ProductVariationStatus = ProductVariationStatus.INACTIVE
+            }
+        )
+    }
+}

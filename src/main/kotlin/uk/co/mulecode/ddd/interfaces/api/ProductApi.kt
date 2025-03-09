@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController
 import uk.co.mulecode.ddd.application.dto.ProductDto
 import uk.co.mulecode.ddd.application.dto.ProductListDto
 import uk.co.mulecode.ddd.application.dto.ProductRegistrationRequest
+import uk.co.mulecode.ddd.application.dto.ProductVariationRegistrationRequest
+import uk.co.mulecode.ddd.application.dto.ProductVariationUpdateRequest
 import uk.co.mulecode.ddd.domain.model.ProductFilter
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
@@ -45,4 +47,17 @@ interface ProductApi {
         @Valid @ModelAttribute queryParams: ProductFilter,
         @PageableDefault(page = 0, size = 10) pageable: Pageable
     ): CompletableFuture<ProductListDto>
+
+    @PostMapping("/{productId}/variations")
+    fun registerProductVariation(
+        @PathVariable productId: UUID,
+        @Valid @RequestBody request: ProductVariationRegistrationRequest
+    ): CompletableFuture<ProductDto>
+
+    @PutMapping("/{productId}/variations/{variationId}")
+    fun updateProductVariation(
+        @PathVariable productId: UUID,
+        @PathVariable variationId: UUID,
+        @Valid @RequestBody request: ProductVariationUpdateRequest
+    ): CompletableFuture<ProductDto>
 }

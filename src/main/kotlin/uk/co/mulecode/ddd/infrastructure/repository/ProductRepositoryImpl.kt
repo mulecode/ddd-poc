@@ -12,14 +12,18 @@ import uk.co.mulecode.ddd.domain.model.ProductFilter
 import uk.co.mulecode.ddd.domain.model.ProductListModel
 import uk.co.mulecode.ddd.domain.model.ProductModel
 import uk.co.mulecode.ddd.domain.model.ProductStatus
+import uk.co.mulecode.ddd.domain.model.ProductVariationModel
 import uk.co.mulecode.ddd.domain.repository.ProductRepository
 import uk.co.mulecode.ddd.infrastructure.repository.jpa.JpaProductEntity
 import uk.co.mulecode.ddd.infrastructure.repository.jpa.JpaProductRepository
+import uk.co.mulecode.ddd.infrastructure.repository.jpa.JpaProductVariationEntity
+import uk.co.mulecode.ddd.infrastructure.repository.jpa.JpaProductVariationRepository
 import java.util.UUID
 
 @Component
 class ProductRepositoryImpl(
-    private val jpaProductRepository: JpaProductRepository
+    private val jpaProductRepository: JpaProductRepository,
+    private val jpaProductVariationRepository: JpaProductVariationRepository
 ) : ProductRepository {
 
     private val log = KotlinLogging.logger {}
@@ -27,7 +31,12 @@ class ProductRepositoryImpl(
     @Transactional
     override fun findById(id: UUID): ProductModel {
         return jpaProductRepository.findByIdOrNull(id)
-            ?.let { ProductModel(product = it) }
+            ?.let {
+                ProductModel(
+                    product = it,
+                    variations = jpaProductVariationRepository.findAllByProductId(it.id).map { v -> v.model() }
+                )
+            }
             ?: throw IllegalArgumentException("Product not found for id $id")
     }
 
@@ -37,37 +46,38 @@ class ProductRepositoryImpl(
         val entity = if (productModel.product is JpaProductEntity) {
             jpaProductRepository.save(productModel.product)
         } else {
-            jpaProductRepository.save(
-                productModel.productJpaEntity()
-            )
+            jpaProductRepository.save(productModel.jpaEntity())
         }
+        productModel.variations?.forEach {
+            jpaProductVariationRepository.save(it.productVariation as JpaProductVariationEntity)
+        }
+        productModel.prospectVariations.forEach {
+            jpaProductVariationRepository.save(it.jpaEntity(entity.id))
+        }
+
         return findById(entity.id)
     }
 
     override fun findAll(pageable: Pageable, filter: ProductFilter?): ProductListModel {
         log.debug { "Retrieving all products with filter $filter" }
-        return jpaProductRepository.findAll(filter?.toSpecification(), pageable)
-            .let {
-                log.debug { "Found ${it.content.size} products in the database" }
-                ProductListModel(
-                    data = it.content.map { productEntity ->
-                        ProductModel(
-                            product = productEntity
-                        )
-                    },
-                    pagination = object : ModelListPageDetails {
-                        override var page: Int = it.number
-                        override var totalPages: Int = it.totalPages
-                        override var size: Int = it.size
-                        override var totalElements: Long = it.totalElements
-                    }
+        return jpaProductRepository.findAll(filter?.toSpecification(), pageable).let {
+            log.debug { "Found ${it.content.size} products in the database" }
+            ProductListModel(data = it.content.map { productEntity ->
+                ProductModel(
+                    product = productEntity
                 )
-            }
+            }, pagination = object : ModelListPageDetails {
+                override var page: Int = it.number
+                override var totalPages: Int = it.totalPages
+                override var size: Int = it.size
+                override var totalElements: Long = it.totalElements
+            })
+        }
     }
 }
 
 
-fun ProductModel.productJpaEntity(): JpaProductEntity {
+fun ProductModel.jpaEntity(): JpaProductEntity {
     return JpaProductEntity(
         id = this.product.id,
         code = this.product.code,
@@ -82,6 +92,24 @@ fun ProductModel.productJpaEntity(): JpaProductEntity {
         originCountryCode = this.product.originCountryCode,
     )
 }
+
+fun ProductVariationModel.jpaEntity(productId: UUID): JpaProductVariationEntity {
+    return JpaProductVariationEntity(
+        id = this.productVariation.id,
+        productId = productId,
+        upcCode = this.productVariation.upcCode,
+        name = this.productVariation.name,
+        description = this.productVariation.description,
+        status = this.productVariation.status,
+    )
+}
+
+fun JpaProductVariationEntity.model(): ProductVariationModel {
+    return ProductVariationModel(
+        productVariation = this
+    )
+}
+
 
 fun ProductFilter.toSpecification(): Specification<JpaProductEntity> {
     return ProductSpecification.withFilter(this)
@@ -105,8 +133,7 @@ object ProductSpecification {
             filter.originCountryCode?.let {
                 predicates.add(
                     criteriaBuilder.equal(
-                        root.get<String>("originCountryCode"),
-                        it
+                        root.get<String>("originCountryCode"), it
                     )
                 )
             }
