@@ -4,6 +4,10 @@ import AppButton from "@/app/components/AppButton";
 import AppActionMenu from "@/app/components/AppActionMenu";
 import AppTitle from "@/app/components/AppTitle";
 import {useEffect, useState} from "react";
+import AppDataView from "@/app/components/AppDataView";
+import AppDataViewItem from "@/app/components/AppDataViewItem";
+import AppBadge from "@/app/components/AppBadge";
+import {badgerStatusConfig} from "@/app/data/BadgerConfig";
 
 interface User {
     id: string;
@@ -49,41 +53,29 @@ export default function UserViewPage() {
             <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 bg-white mt-6">
                 {loading && <p className="text-gray-400">Loading user data...</p>}
                 {error && <p className="text-red-500">{error}</p>}
-
                 {user && (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-4 ">
-                        <div className="flex flex-col">
-                            <span className="text-gray-800 text-sm">User ID</span>
-                            <span className="font-medium">{user.id}</span>
-                        </div>
-
-                        <div className="flex flex-col">
-                            <span className="text-gray-800 text-sm">Name</span>
-                            <span className="font-medium">{user.name}</span>
-                        </div>
-
-                        <div className="flex flex-col">
-                            <span className="text-gray-800 text-sm">Email</span>
-                            <span className="font-medium">{user.email}</span>
-                        </div>
-
-                        <div className="flex flex-col">
-                            <span className="text-gray-800 text-sm">Status</span>
-                            <span className="font-medium">{user.status}</span>
-                        </div>
-                    </div>
+                    <AppDataView>
+                        <AppDataViewItem title="User ID">
+                            {user.id}
+                        </AppDataViewItem>
+                        <AppDataViewItem title="Name">
+                            {user.name}
+                        </AppDataViewItem>
+                        <AppDataViewItem title="Email">
+                            {user.email}
+                        </AppDataViewItem>
+                        <AppDataViewItem title="Status">
+                            <AppBadge text={user.status}
+                                      colourConfig={badgerStatusConfig}
+                            />
+                        </AppDataViewItem>
+                    </AppDataView>
                 )}
                 <AppActionMenu>
-                    <AppButton
-                        variant="secondary"
-                        onClick={() => router.push("/users")}
-                    >
+                    <AppButton variant="secondary" onClick={() => router.push("/users")}>
                         Cancel
                     </AppButton>
-                    <AppButton
-                        variant="primary"
-                        onClick={() => router.push(`/users/${userId}/edit`)}
-                    >
+                    <AppButton variant="primary" onClick={() => router.push(`/users/${userId}/edit`)}>
                         Edit
                     </AppButton>
                 </AppActionMenu>

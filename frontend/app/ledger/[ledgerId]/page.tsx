@@ -6,7 +6,6 @@ import AppTitle from "@/app/components/AppTitle";
 import AppBadge from "@/app/components/AppBadge";
 import AppButton from "@/app/components/AppButton";
 import AppActionMenu from "@/app/components/AppActionMenu";
-import Image from "next/image";
 
 interface LedgerHistoryModel {
     id: string;

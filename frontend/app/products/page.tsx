@@ -12,7 +12,7 @@ import AppTableSummary from "@/app/components/AppTableSummary";
 import AppTableNav from "@/app/components/AppTableNav";
 
 
-interface Product {
+export interface Product {
     id: string;
     code: string;
     manufacturer: string;
@@ -101,7 +101,7 @@ export default function ProductsPage() {
                     columnWidths={["w-2/10", "w-2/10", "w-2/10", "w-2/10", "w-2/10"]}
                     columnCss={["text-xs", "text-xs", "", "", ""]}
                     data={products}
-                    linkBaseUrl="/users"
+                    linkBaseUrl="/products"
                 />
 
                 <div className="flex flex-wrap gap-4 w-full text-white">

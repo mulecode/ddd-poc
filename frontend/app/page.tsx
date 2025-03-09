@@ -7,10 +7,7 @@ export default function Home() {
     const router = useRouter();
     return (
         <div>
-            <AppTitle
-                title="Dashboard"
-                subTitle="Quick Access"
-            />
+            <AppTitle title="Dashboard" subTitle="Quick Access"/>
             <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 bg-white mt-6">
 
                 <div className="grid gap-4 grid-cols-2 md:grid-cols-3">
