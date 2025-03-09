@@ -11,7 +11,6 @@ import uk.co.mulecode.ddd.domain.model.LedgerAccountModel
 import uk.co.mulecode.ddd.domain.model.LedgerAccountStatus
 import uk.co.mulecode.ddd.domain.model.LedgerAccountType
 import uk.co.mulecode.ddd.domain.model.TransactionType
-import uk.co.mulecode.ddd.domain.model.UserStatus
 import uk.co.mulecode.ddd.domain.model.VerificationStatus
 import java.math.BigDecimal
 import java.time.Instant
@@ -105,9 +104,6 @@ data class LedgerAccountFilterRequest(
 ) : LedgerAccountFilter
 
 data class LedgerAccountCreationDto(
-    @field:NotNull(message = "User ID is required")
-    val userId: UUID,
-
     @field:NotNull(message = "Type is required")
     val type: LedgerAccountType,
 

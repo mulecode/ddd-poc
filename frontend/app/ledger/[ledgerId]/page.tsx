@@ -107,7 +107,9 @@ export default function LedgerViewPage() {
                                 {ledgerModel.balance.toLocaleString()}
                             </span>
                         </div>
+
                         <h2 className="text-1xl font-bold text-gray-800 pt-5">History</h2>
+                        <h3 className="text-xs text-gray-400 pb-3">Last {ledgerHistorySize} records</h3>
 
                         <div className="overflow-x-auto">
                             <table className="min-w-full bg-white">

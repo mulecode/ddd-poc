@@ -46,12 +46,17 @@ export default function LedgerCreatePage() {
                 backgroundImage="/dashboard/ledger.png"
             />
             <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 bg-white mt-6">
-                <AppLedgerCreateForm state="NEW"
-                                     data={null}
-                                     loading={loading}
-                                     onSave={handleSubmit}
-                                     onCancel={() => router.push("/ledger")}
-                />
+                {success && <p className="text-green-500 bg-green-800 p-3 rounded mb-4">{success}</p>}
+                {error && <p className="text-red-500 bg-red-800 p-3 rounded mb-4">{error}</p>}
+
+                {!loading && !success && (
+                    <AppLedgerCreateForm state="NEW"
+                                         data={null}
+                                         loading={loading}
+                                         onSave={handleSubmit}
+                                         onCancel={() => router.push("/ledger")}
+                    />
+                )}
             </main>
         </div>
     )

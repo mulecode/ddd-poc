@@ -2,12 +2,12 @@
 
 import {AppFieldValidators, AppValidate} from "@/app/data/Validators";
 import React, {useEffect, useState} from "react";
-import AppUserForm, {UserFormData} from "@/app/users/AppUserForm";
 import AppFormSelect from "@/app/components/AppFormSelect";
 import AppFormInput from "@/app/components/AppFormInput";
 import AppActionMenu from "@/app/components/AppActionMenu";
 import AppButton from "@/app/components/AppButton";
 import Image from "next/image";
+import AppDataView from "@/app/components/AppDataView";
 
 export interface LedgerTransactionFormData {
     referenceId: string;
@@ -69,21 +69,23 @@ const AppLedgerTransactionForm: React.FC<Props> = ({
         onSave(formData);
     }
 
+    const handleInputChange = (field: string, value: any) => {
+        setTouched(true);
+        setFormData((prev: any) => prev ? {
+            ...prev,
+            [field]: value
+        } : prev);
+    };
+
     return (
         <div>
             <form onSubmit={onSubmit}>
-                <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-6 sm:grid-cols-6 mb-4 pb-4">
+                <AppDataView>
 
                     <AppFormInput title="Reference ID" description="Unique reference ID value"
                                   type="text" required={true} value={formData.referenceId}
                                   errors={errors.referenceId}
-                                  onChange={(value) => {
-                                      setTouched(true);
-                                      setFormData((prev: any) => prev ? {
-                                          ...prev,
-                                          referenceId: value
-                                      } : prev);
-                                  }}
+                                  onChange={(value) => handleInputChange("referenceId", value)}
                     />
 
                     <AppFormSelect title="Transaction Type" description="Either Debit or Credit"
@@ -92,27 +94,17 @@ const AppLedgerTransactionForm: React.FC<Props> = ({
                                        {id: "DEBIT", name: "Debit"},
                                        {id: "CREDIT", name: "Credit"},
                                    ]}
-                                   onChange={(value) => {
-                                       setTouched(true);
-                                       setFormData(prev => prev ? {
-                                           ...prev,
-                                           transactionType: value
-                                       } : prev)
-                                   }}
+                                   onChange={(value) => handleInputChange("transactionType", value)}
                     />
 
                     <AppFormInput title="Amount" description="Value of the transaction"
                                   type="text" required={true} value={formData.amount}
                                   errors={errors.amount}
-                                  onChange={(value) => {
-                                      setTouched(true);
-                                      setFormData((prev: any) => prev ? {
-                                          ...prev,
-                                          amount: value
-                                      } : prev);
-                                  }}
+                                  onChange={(value) => handleInputChange("amount", value)}
                     />
-                </div>
+
+                </AppDataView>
+
                 <AppActionMenu>
                     <AppButton variant="secondary" onClick={onCancel}>
                         Cancel

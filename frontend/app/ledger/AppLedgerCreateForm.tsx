@@ -12,7 +12,6 @@ import AppDataView from "@/app/components/AppDataView";
 export interface LedgeCreateFormData {
     name: string;
     description: string;
-    userId: string;
     type: ("ASSETS" | "LIABILITIES" | "EQUITY" | "REVENUE" | "EXPENSES") | string;
 }
 
@@ -37,9 +36,6 @@ const FormDataValidator: AppFieldValidators = {
         max: 100,
         format: "alphanumeric"
     },
-    userId: {
-        required: true,
-    },
     type: {
         required: true,
     }
@@ -57,7 +53,6 @@ const AppLedgerTransactionForm: React.FC<Props> = ({
         data || {
             name: "",
             description: "",
-            userId: "",
             type: "ASSETS",
         }
     );
@@ -113,11 +108,6 @@ const AppLedgerTransactionForm: React.FC<Props> = ({
                                    onChange={(value) => handleInputChange("type", value)}
                     />
 
-                    <AppFormInput title="User ID" description="Association with the account"
-                                  type="text" required={true} value={formData.userId}
-                                  errors={errors.userId}
-                                  onChange={(value) => handleInputChange("userId", value)}
-                    />
                 </AppDataView>
                 <AppActionMenu>
                     <AppButton variant="secondary" onClick={onCancel}>

@@ -29,7 +29,6 @@ interface LedgerAccountFilter {
 
 interface LedgerAccount {
     val id: UUID
-    val userId: UUID
     val accountType: LedgerAccountType
     var name: String
     var description: String
@@ -124,14 +123,12 @@ class LedgerAccountModel(
 
     companion object {
         fun create(
-            userId: UUID,
             type: LedgerAccountType,
             name: String,
             description: String
         ) = LedgerAccountModel(
             data = object : LedgerAccount {
                 override val id: UUID = sortedUuid()
-                override val userId: UUID = userId
                 override val accountType: LedgerAccountType = type
                 override var name: String = name
                 override var description: String = description

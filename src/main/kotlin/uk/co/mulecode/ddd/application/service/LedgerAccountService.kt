@@ -24,7 +24,6 @@ class LedgerAccountService(
     @Transactional
     fun createLedgerAccount(request: LedgerAccountCreationDto): LedgerAccountDto {
         val account = LedgerAccountModel.create(
-            userId = request.userId,
             type = request.type,
             name = request.name,
             description = request.description

@@ -84,7 +84,7 @@ export default function ProductEditPage() {
                     </div>
                 )}
 
-                {(!loading && formData) && (
+                {(!loading && formData && !success) && (
                     <AppProductForm
                         state="EDIT"
                         loading={loading}

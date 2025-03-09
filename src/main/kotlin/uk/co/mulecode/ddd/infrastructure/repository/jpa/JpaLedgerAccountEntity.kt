@@ -7,7 +7,6 @@ import jakarta.persistence.Enumerated
 import jakarta.persistence.Id
 import jakarta.persistence.Table
 import jakarta.validation.constraints.NotBlank
-import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 import uk.co.mulecode.ddd.domain.model.LedgerAccount
 import uk.co.mulecode.ddd.domain.model.LedgerAccountStatus
@@ -20,10 +19,6 @@ class JpaLedgerAccountEntity(
     @Id
     @Column(name = "id", updatable = false, nullable = false)
     override val id: UUID,
-
-    @NotNull
-    @Column(name = "user_id", updatable = false, nullable = false)
-    override val userId: UUID,
 
     @NotBlank
     @Size(min = 5, max = 50)

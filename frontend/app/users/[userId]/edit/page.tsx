@@ -93,7 +93,7 @@ export default function UserEditPage() {
                     </div>
                 )}
 
-                {(!loading && formData) && (
+                {(!loading && formData && !success) && (
                     <AppUserForm
                         state="EDIT"
                         loading={loading}

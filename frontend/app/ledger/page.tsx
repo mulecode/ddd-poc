@@ -3,12 +3,11 @@ import {useEffect, useState} from "react";
 import {useRouter} from "next/navigation";
 import AppTitle from "@/app/components/AppTitle";
 import AppButton from "@/app/components/AppButton";
-import AppTableNav from "@/app/components/AppTableNav";
 import Image from "next/image";
 import AppFilterBar from "@/app/components/AppFilterBar";
 import {AppSelectItem} from "@/app/components/AppFormSelect";
-import AppTableSummary from "@/app/components/AppTableSummary";
 import AppTableData from "@/app/components/AppTableData";
+import AppTableFooter from "@/app/components/AppTableFooter";
 
 interface Ledger {
     id: string;
@@ -79,8 +78,8 @@ export default function LedgerPage() {
             <main className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 bg-white mt-6">
                 <AppFilterBar filters={filters}
                               defaultFilter="name"
-                              onSearch={handleSearch}/>
-
+                              onSearch={handleSearch}
+                />
                 <AppTableData
                     headers={["ID", "Name", "Description", "Type"]}
                     columnWidths={["w-2/8", "w-2/8", "w-2/8", "w-2/8"]}
@@ -88,23 +87,13 @@ export default function LedgerPage() {
                     data={ledger}
                     linkBaseUrl="/ledger"
                 />
-                {/* Tables footer */}
-                <div className="flex flex-wrap gap-4 w-full text-white">
-                    {/* Pagination Summary */}
-                    <AppTableSummary
-                        currentPage={currentPage}
-                        pageSize={pageSize}
-                        totalElements={totalElements}
-                    />
-                    {/* Pagination Controls in Second Column */}
-                    <div className="flex-1 w-full min-w-[300px] p-4 flex justify-end">
-                        <AppTableNav
-                            currentPage={currentPage}
-                            totalPages={totalPages}
-                            setCurrentPage={(page) => setCurrentPage(page)}
-                        />
-                    </div>
-                </div>
+                <AppTableFooter
+                    currentPage={currentPage}
+                    totalPages={totalPages}
+                    pageSize={pageSize}
+                    totalElements={totalElements}
+                    onPageChange={(page) => setCurrentPage(page)}
+                />
             </main>
         </div>
     );

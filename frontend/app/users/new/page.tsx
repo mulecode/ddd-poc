@@ -46,7 +46,7 @@ export default function UserCreatePage() {
                 {success && <p className="text-green-500 bg-green-800 p-3 rounded mb-4">{success}</p>}
                 {error && <p className="text-red-500 bg-red-800 p-3 rounded mb-4">{error}</p>}
 
-                {!loading && (
+                {!loading && !success && (
                     <AppUserForm
                         state="NEW"
                         loading={loading}

@@ -78,7 +78,6 @@ class LedgerAccountRepositoryImpl(
             jpaLedgerAccountRepository.save(
                 JpaLedgerAccountEntity(
                     id = model.data.id,
-                    userId = model.data.userId,
                     accountType = model.data.accountType,
                     name = model.data.name,
                     description = model.data.description,
