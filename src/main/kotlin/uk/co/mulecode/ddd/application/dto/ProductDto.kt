@@ -1,10 +1,13 @@
 package uk.co.mulecode.ddd.application.dto
 
+import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
+import uk.co.mulecode.ddd.application.validator.UniqueSpecificationName
 import uk.co.mulecode.ddd.domain.model.ProductModel
 import uk.co.mulecode.ddd.domain.model.ProductStatus
 import uk.co.mulecode.ddd.domain.model.ProductVariationModel
+import uk.co.mulecode.ddd.domain.model.ProductVariationSpecification
 import uk.co.mulecode.ddd.domain.model.ProductVariationStatus
 import uk.co.mulecode.ddd.infrastructure.validator.ValidUPC
 import java.util.UUID
@@ -38,7 +41,15 @@ data class ProductVariationDto(
     var upcCode: String,
     var name: String,
     var description: String,
+    var specificationsInLine: String? = null,
+    var specifications: List<ProductVariationSpecificationDto>? = null,
     var status: ProductVariationStatus,
+)
+
+data class ProductVariationSpecificationDto(
+    var specName: String,
+    var specValue: String,
+    var specUnit: String,
 )
 
 data class ProductRegistrationRequest(
@@ -99,6 +110,29 @@ data class ProductVariationUpdateRequest(
     val description: String,
 )
 
+@UniqueSpecificationName
+data class ProductVariationSpecificationRequest(
+
+    @field:Valid
+    val specifications: List<Specification>
+
+) {
+    data class Specification(
+        @field:NotBlank(message = "name is required")
+        @field:Size(min = 3, max = 10, message = "name must be between 3 and 10 characters")
+        val name: String,
+
+        @field:NotBlank(message = "value is required")
+        @field:Size(min = 1, max = 10, message = "value must be between 1 and 10 characters")
+        val value: String,
+
+        @field:NotBlank(message = "unit is required")
+        @field:Size(min = 1, max = 10, message = "unit must be between 1 and 10 characters")
+        val unit: String,
+    )
+}
+
+
 fun ProductModel.dto(): ProductDto {
     return ProductDto(
         id = this.product.id,
@@ -122,6 +156,16 @@ fun ProductVariationModel.dto(): ProductVariationDto {
         upcCode = this.productVariation.upcCode,
         name = this.productVariation.name,
         description = this.productVariation.description,
-        status = this.productVariation.status
+        status = this.productVariation.status,
+        specificationsInLine = this.specifications?.joinToString { "${it.name}: ${it.value}${it.unit}" },
+        specifications = this.specifications?.map { it.dto() }
+    )
+}
+
+fun ProductVariationSpecification.dto(): ProductVariationSpecificationDto {
+    return ProductVariationSpecificationDto(
+        specName = this.name,
+        specValue = this.value,
+        specUnit = this.unit
     )
 }

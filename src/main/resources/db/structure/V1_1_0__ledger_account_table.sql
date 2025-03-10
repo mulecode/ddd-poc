@@ -27,9 +27,9 @@ CREATE TABLE ledger_record
     balance_snapshot       DECIMAL(19, 2) NOT NULL,
     -- Auditing fields
     created_by             VARCHAR(50)    NOT NULL,
-    created_date           TIMESTAMP      NOT NULL,
+    created_date           TIMESTAMP(6)   NOT NULL,
     last_modified_by       VARCHAR(50)    NOT NULL,
-    last_modified_date     TIMESTAMP      NOT NULL,
+    last_modified_date     TIMESTAMP(6)   NOT NULL,
     version                INTEGER DEFAULT 0,
     -- Blockchain fields
     verification_status    VARCHAR(100)   NOT NULL,

@@ -5,12 +5,6 @@ import uk.co.mulecode.ddd.infrastructure.utils.IdentificationGenerator.Companion
 import java.math.BigDecimal
 import java.util.UUID
 
-interface Dimensions {
-    var weight: Double
-    val width: Double
-    val height: Double
-    val depth: Double
-}
 
 enum class ProductStatus {
     ACTIVE,
@@ -87,6 +81,11 @@ interface ProductVariation {
     var status: ProductVariationStatus
 }
 
+interface ProductVariationSpecification {
+    val name: String
+    var value: String
+    var unit: String
+}
 
 class ProductModel(
     val product: Product,
@@ -99,8 +98,13 @@ class ProductModel(
         prospectVariations.add(variation)
     }
 
-    fun updateVariarionDetails(variationId: UUID, name: String, description: String) {
+    fun updateVariationDetails(variationId: UUID, name: String, description: String) {
         variations?.find { it.productVariation.id == variationId }?.updateDetails(name, description)
+    }
+
+    fun getVariation(variationId: UUID): ProductVariationModel {
+        return variations?.find { it.productVariation.id == variationId }
+            ?: throw IllegalArgumentException("Product variation not found")
     }
 
     companion object {
@@ -139,6 +143,7 @@ class ProductListModel(
 
 class ProductVariationModel(
     val productVariation: ProductVariation,
+    var specifications: MutableList<ProductVariationSpecification>? = null,
 ) : BaseModel() {
 
     fun updateDetails(
@@ -147,6 +152,25 @@ class ProductVariationModel(
     ) {
         productVariation.name = name
         productVariation.description = description
+    }
+
+    fun updateSpecifications(specifications: List<ProductVariationSpecification>) {
+        if (this.specifications == null) {
+            throw IllegalStateException("ProductVariationModel specifications is not initialized")
+        }
+
+        // update by name
+        specifications.forEach { spec ->
+            val existingSpec = this.specifications?.find { it.name == spec.name }
+            if (existingSpec != null) {
+                existingSpec.value = spec.value
+                existingSpec.unit = spec.unit
+            } else {
+                this.specifications?.add(spec)
+            }
+        }
+        // remove by name
+        this.specifications?.removeIf { spec -> specifications.none { it.name == spec.name } }
     }
 
     companion object {

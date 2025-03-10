@@ -55,4 +55,14 @@ class AppControllerAdvice {
         response["status"] = HttpStatus.BAD_REQUEST.value()
         return ResponseEntity(response, HttpStatus.BAD_REQUEST)
     }
+
+    @ExceptionHandler(Exception::class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    fun handleExceptions(ex: Exception): ResponseEntity<Map<String, Any?>> {
+        log.error(ex) { "An error occurred ${ex.message}" }
+        val response = mutableMapOf<String, Any?>()
+        response["message"] = ex.message
+        response["status"] = HttpStatus.INTERNAL_SERVER_ERROR.value()
+        return ResponseEntity(response, HttpStatus.INTERNAL_SERVER_ERROR)
+    }
 }

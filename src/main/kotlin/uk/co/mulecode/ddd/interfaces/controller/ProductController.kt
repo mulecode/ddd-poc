@@ -7,6 +7,7 @@ import uk.co.mulecode.ddd.application.dto.ProductDto
 import uk.co.mulecode.ddd.application.dto.ProductListDto
 import uk.co.mulecode.ddd.application.dto.ProductRegistrationRequest
 import uk.co.mulecode.ddd.application.dto.ProductVariationRegistrationRequest
+import uk.co.mulecode.ddd.application.dto.ProductVariationSpecificationRequest
 import uk.co.mulecode.ddd.application.dto.ProductVariationUpdateRequest
 import uk.co.mulecode.ddd.application.service.ProductService
 import uk.co.mulecode.ddd.domain.model.ProductFilter
@@ -65,6 +66,17 @@ class ProductController(
     ): CompletableFuture<ProductDto> {
         return CompletableFuture.completedFuture(
             productService.updateProductVariation(productId, variationId, request)
+        )
+    }
+
+    @Async("controllerTreadPoolExecutor")
+    override fun updateProductVariationSpecifications(
+        productId: UUID,
+        variationId: UUID,
+        request: ProductVariationSpecificationRequest
+    ): CompletableFuture<ProductDto> {
+        return CompletableFuture.completedFuture(
+            productService.updateProductVariationSpecs(productId, variationId, request)
         )
     }
 }

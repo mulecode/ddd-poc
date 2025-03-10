@@ -8,13 +8,13 @@ import uk.co.mulecode.ddd.application.dto.ProductDto
 import uk.co.mulecode.ddd.application.dto.ProductListDto
 import uk.co.mulecode.ddd.application.dto.ProductRegistrationRequest
 import uk.co.mulecode.ddd.application.dto.ProductVariationRegistrationRequest
+import uk.co.mulecode.ddd.application.dto.ProductVariationSpecificationRequest
 import uk.co.mulecode.ddd.application.dto.ProductVariationUpdateRequest
-import uk.co.mulecode.ddd.application.dto.UserFilterRequest
 import uk.co.mulecode.ddd.application.dto.dto
 import uk.co.mulecode.ddd.domain.model.ProductFilter
-import uk.co.mulecode.ddd.domain.model.ProductListModel
 import uk.co.mulecode.ddd.domain.model.ProductModel
 import uk.co.mulecode.ddd.domain.model.ProductVariationModel
+import uk.co.mulecode.ddd.domain.model.ProductVariationSpecification
 import uk.co.mulecode.ddd.domain.repository.ProductRepository
 import java.util.UUID
 
@@ -100,10 +100,32 @@ class ProductService(
         log.debug { "Updating product variation for product: $productId" }
         return productRepository.findById(productId)
             .let { model ->
-                model.updateVariarionDetails(
+                model.updateVariationDetails(
                     variationId = variationId,
                     name = request.name,
                     description = request.description,
+                )
+                productRepository.save(model)
+            }.dto()
+    }
+
+    @Transactional
+    fun updateProductVariationSpecs(
+        productId: UUID,
+        variationId: UUID,
+        request: ProductVariationSpecificationRequest
+    ): ProductDto {
+        log.debug { "Updating product variation specs for product: $productId" }
+        return productRepository.findById(productId)
+            .let { model ->
+                model.getVariation(variationId).updateSpecifications(
+                    specifications = request.specifications.map {
+                        object : ProductVariationSpecification {
+                            override val name = it.name
+                            override var value = it.value
+                            override var unit = it.unit
+                        }
+                    }
                 )
                 productRepository.save(model)
             }.dto()

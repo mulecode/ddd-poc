@@ -16,6 +16,7 @@ import uk.co.mulecode.ddd.application.dto.ProductDto
 import uk.co.mulecode.ddd.application.dto.ProductListDto
 import uk.co.mulecode.ddd.application.dto.ProductRegistrationRequest
 import uk.co.mulecode.ddd.application.dto.ProductVariationRegistrationRequest
+import uk.co.mulecode.ddd.application.dto.ProductVariationSpecificationRequest
 import uk.co.mulecode.ddd.application.dto.ProductVariationUpdateRequest
 import uk.co.mulecode.ddd.domain.model.ProductFilter
 import java.util.UUID
@@ -59,5 +60,12 @@ interface ProductApi {
         @PathVariable productId: UUID,
         @PathVariable variationId: UUID,
         @Valid @RequestBody request: ProductVariationUpdateRequest
+    ): CompletableFuture<ProductDto>
+
+    @PutMapping("/{productId}/variations/{variationId}/specifications")
+    fun updateProductVariationSpecifications(
+        @PathVariable productId: UUID,
+        @PathVariable variationId: UUID,
+        @Valid @RequestBody request: ProductVariationSpecificationRequest
     ): CompletableFuture<ProductDto>
 }

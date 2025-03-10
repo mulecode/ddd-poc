@@ -13,17 +13,21 @@ import uk.co.mulecode.ddd.domain.model.ProductListModel
 import uk.co.mulecode.ddd.domain.model.ProductModel
 import uk.co.mulecode.ddd.domain.model.ProductStatus
 import uk.co.mulecode.ddd.domain.model.ProductVariationModel
+import uk.co.mulecode.ddd.domain.model.ProductVariationSpecification
 import uk.co.mulecode.ddd.domain.repository.ProductRepository
 import uk.co.mulecode.ddd.infrastructure.repository.jpa.JpaProductEntity
 import uk.co.mulecode.ddd.infrastructure.repository.jpa.JpaProductRepository
 import uk.co.mulecode.ddd.infrastructure.repository.jpa.JpaProductVariationEntity
 import uk.co.mulecode.ddd.infrastructure.repository.jpa.JpaProductVariationRepository
+import uk.co.mulecode.ddd.infrastructure.repository.jpa.JpaProductVariationSpecificationEntity
+import uk.co.mulecode.ddd.infrastructure.repository.jpa.JpaProductVariationSpecificationRepository
 import java.util.UUID
 
 @Component
 class ProductRepositoryImpl(
     private val jpaProductRepository: JpaProductRepository,
-    private val jpaProductVariationRepository: JpaProductVariationRepository
+    private val jpaProductVariationRepository: JpaProductVariationRepository,
+    private val jpaProductVariationSpecificationRepository: JpaProductVariationSpecificationRepository
 ) : ProductRepository {
 
     private val log = KotlinLogging.logger {}
@@ -31,10 +35,21 @@ class ProductRepositoryImpl(
     @Transactional
     override fun findById(id: UUID): ProductModel {
         return jpaProductRepository.findByIdOrNull(id)
-            ?.let {
+            ?.let { product ->
+                val allVariations = jpaProductVariationRepository.findAllByProductId(product.id)
+                val idToSpecifications = jpaProductVariationSpecificationRepository
+                    .findAllByProductIdAndVariationIdIsIn(product.id, allVariations.map { it.id })
+                    .groupBy { it.variationId }
                 ProductModel(
-                    product = it,
-                    variations = jpaProductVariationRepository.findAllByProductId(it.id).map { v -> v.model() }
+                    product = product,
+                    variations = allVariations.map { productVariation ->
+                        ProductVariationModel(
+                            productVariation = productVariation,
+                            specifications = idToSpecifications[productVariation.id]
+                                ?.toMutableList()
+                                ?: mutableListOf()
+                        )
+                    }
                 )
             }
             ?: throw IllegalArgumentException("Product not found for id $id")
@@ -48,11 +63,39 @@ class ProductRepositoryImpl(
         } else {
             jpaProductRepository.save(productModel.jpaEntity())
         }
-        productModel.variations?.forEach {
-            jpaProductVariationRepository.save(it.productVariation as JpaProductVariationEntity)
+
+        productModel.variations?.forEach { variation ->
+            jpaProductVariationRepository.save(variation.productVariation as JpaProductVariationEntity)
+            log.debug { "Saving variation: $variation total specifications ${variation.specifications?.size}" }
+            variation.specifications?.forEach { spec ->
+                if (spec is JpaProductVariationSpecificationEntity) {
+                    jpaProductVariationSpecificationRepository.save(spec)
+                } else {
+                    jpaProductVariationSpecificationRepository.save(
+                        spec.jpaEntity(
+                            productId = entity.id,
+                            variationId = variation.productVariation.id
+                        )
+                    )
+                }
+            }
+            val allNames = variation.specifications?.map { it.name } ?: emptyList()
+            jpaProductVariationSpecificationRepository.deleteAllByNameNotInAndProductIdAndVariationId(
+                names = allNames,
+                productId = entity.id,
+                variationId = variation.productVariation.id
+            )
         }
-        productModel.prospectVariations.forEach {
-            jpaProductVariationRepository.save(it.jpaEntity(entity.id))
+        productModel.prospectVariations.forEach { variation ->
+            jpaProductVariationRepository.save(variation.jpaEntity(entity.id))
+            variation.specifications?.forEach { spec ->
+                jpaProductVariationSpecificationRepository.save(
+                    spec.jpaEntity(
+                        productId = entity.id,
+                        variationId = variation.productVariation.id
+                    )
+                )
+            }
         }
 
         return findById(entity.id)
@@ -104,9 +147,23 @@ fun ProductVariationModel.jpaEntity(productId: UUID): JpaProductVariationEntity 
     )
 }
 
-fun JpaProductVariationEntity.model(): ProductVariationModel {
+fun ProductVariationSpecification.jpaEntity(
+    productId: UUID,
+    variationId: UUID
+): JpaProductVariationSpecificationEntity {
+    return JpaProductVariationSpecificationEntity(
+        productId = productId,
+        variationId = variationId,
+        name = this.name,
+        value = this.value,
+        unit = this.unit
+    )
+}
+
+fun JpaProductVariationEntity.model(specifications: MutableList<ProductVariationSpecification>): ProductVariationModel {
     return ProductVariationModel(
-        productVariation = this
+        productVariation = this,
+        specifications = specifications
     )
 }
 

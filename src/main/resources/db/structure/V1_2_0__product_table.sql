@@ -52,3 +52,25 @@ CREATE TABLE product_variation
 CREATE INDEX idx_prv_prdid ON product_variation (product_id);
 CREATE INDEX idx_prv_name ON product_variation (name);
 CREATE INDEX idx_prv_upc ON product_variation (upc_code);
+
+
+CREATE TABLE product_variation_specification
+(
+    product_id         BINARY(16) NOT NULL,
+    variation_id       BINARY(16) NOT NULL,
+    spec_name          VARCHAR(10)  NOT NULL,
+    spec_value         VARCHAR(10)  NOT NULL,
+    spec_unit          VARCHAR(10)  NOT NULL,
+    -- Auditing fields
+    created_by         VARCHAR(50)  NOT NULL,
+    created_date       TIMESTAMP(6) NOT NULL,
+    last_modified_by   VARCHAR(50)  NOT NULL,
+    last_modified_date TIMESTAMP(6) NOT NULL,
+    version            INTEGER DEFAULT 0,
+
+    PRIMARY KEY (product_id, variation_id, spec_name),
+    CONSTRAINT fk_pvs_product FOREIGN KEY (product_id) REFERENCES product (id) ON DELETE CASCADE,
+    CONSTRAINT fk_pvs_product_variation FOREIGN KEY (variation_id) REFERENCES product_variation (id) ON DELETE CASCADE
+);
+
+CREATE INDEX idx_pvs_name ON product_variation_specification (spec_name);

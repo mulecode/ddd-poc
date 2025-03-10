@@ -16,3 +16,20 @@ interface JpaProductVariationRepository : JpaRepository<JpaProductVariationEntit
     JpaSpecificationExecutor<JpaProductVariationEntity> {
     fun findAllByProductId(productId: UUID): List<JpaProductVariationEntity>
 }
+
+@Repository
+interface JpaProductVariationSpecificationRepository :
+    JpaRepository<JpaProductVariationSpecificationEntity, JpaProductVariationSpecificationId>,
+    JpaSpecificationExecutor<JpaProductVariationSpecificationEntity> {
+
+    fun findAllByProductIdAndVariationIdIsIn(
+        productId: UUID,
+        variationIds: List<UUID>
+    ): MutableList<JpaProductVariationSpecificationEntity>
+
+    fun deleteAllByNameNotInAndProductIdAndVariationId(
+        names: List<String>,
+        productId: UUID,
+        variationId: UUID
+    ): Int
+}
