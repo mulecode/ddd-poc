@@ -29,7 +29,7 @@ export default function LedgerTransactionPage() {
     useEffect(() => {
         if (!ledgerId) return;
 
-        fetch(`http://localhost:8080/app/ledger/accounts/${ledgerId}`)
+        fetch(`/backend/ledger/accounts/${ledgerId}`)
             .then((response) => {
                 if (!response.ok) {
                     throw new Error(`Ledger not found (ID: ${ledgerId})`);
@@ -51,7 +51,7 @@ export default function LedgerTransactionPage() {
         setError(null);
         setSuccess(null);
         try {
-            const response = await fetch(`http://localhost:8080/app/ledger/accounts/${ledgerId}/transactions`, {
+            const response = await fetch(`/backend/ledger/accounts/${ledgerId}/transactions`, {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(payload),

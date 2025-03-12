@@ -16,7 +16,7 @@ export default function UserCreatePage() {
         setError(null);
         setSuccess(null);
         try {
-            const response = await fetch("http://localhost:8080/app/users", {
+            const response = await fetch("/backend/users", {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(payload),

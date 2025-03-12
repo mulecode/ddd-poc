@@ -35,7 +35,7 @@ export default function UsersPage() {
 
     useEffect(() => {
         console.log(`Fetching users... ${currentPage} ${pageSize} ${queryStrings}`);
-        fetch(`http://localhost:8080/app/users?page=${currentPage}&size=${pageSize}&${queryStrings}`)
+        fetch(`/backend/users?page=${currentPage}&size=${pageSize}&${queryStrings}`)
             .then((response) => response.json())
             .then((data: UsersApiResponse) => {
                 setUsers(data.users);
@@ -44,7 +44,6 @@ export default function UsersPage() {
             })
             .catch((error) => console.error("Error fetching users:", error));
     }, [currentPage, pageSize, queryStrings]);
-
 
     const filters = [
         {id: "id", name: "Identification"},

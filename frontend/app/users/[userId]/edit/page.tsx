@@ -5,14 +5,6 @@ import AppTitle from "@/app/components/AppTitle";
 import AppButton from "@/app/components/AppButton";
 import AppUserForm, {UserFormData} from "@/app/users/AppUserForm";
 
-interface UserEditRequest {
-    id: string;
-    name: string;
-    email: string;
-    status: string;
-}
-
-
 export default function UserEditPage() {
     const router = useRouter();
     const {userId} = useParams();
@@ -26,7 +18,7 @@ export default function UserEditPage() {
         console.log("User ID:", userId);
         if (!userId) return;
         setLoading(true);
-        fetch(`http://localhost:8080/app/users/${userId}`)
+        fetch(`/backend/users/${userId}`)
             .then((response) => {
                 if (!response.ok) {
                     throw new Error("User not found");
@@ -49,7 +41,7 @@ export default function UserEditPage() {
         setError(null);
         setSuccess(null);
         try {
-            const response = await fetch(`http://localhost:8080/app/users/${userId}`, {
+            const response = await fetch(`/backend/users/${userId}`, {
                 method: "PUT",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(payload),

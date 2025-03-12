@@ -36,7 +36,7 @@ export default function LedgerPage() {
 
     useEffect(() => {
         console.log(`Fetching ledgers... ${currentPage} ${pageSize} ${queryStrings}`);
-        fetch(`http://localhost:8080/app/ledger/accounts?page=${currentPage}&size=${pageSize}&${queryStrings}`)
+        fetch(`/backend/ledger/accounts?page=${currentPage}&size=${pageSize}&${queryStrings}`)
             .then((response) => response.json())
             .then((data: LedgerApiResponse) => {
                 setLedger(data.ledgerAccounts);

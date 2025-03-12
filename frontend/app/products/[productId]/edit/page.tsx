@@ -18,7 +18,7 @@ export default function ProductEditPage() {
     useEffect(() => {
         if (!productId) return;
         setLoading(true);
-        fetch(`http://localhost:8080/app/products/${productId}`)
+        fetch(`/backend/products/${productId}`)
             .then((response) => {
                 if (!response.ok) {
                     throw new Error(`Product not found (ID: ${productId})`);
@@ -40,7 +40,7 @@ export default function ProductEditPage() {
         setError(null);
         setSuccess(null);
         try {
-            const response = await fetch(`http://localhost:8080/app/products/${productId}`, {
+            const response = await fetch(`/backend/products/${productId}`, {
                 method: "PUT",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(payload),

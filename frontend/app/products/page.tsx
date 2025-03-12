@@ -23,6 +23,22 @@ export interface Product {
     subCategory: string;
     originCountryCode: string;
     status: string;
+    variations?: ProductVariation[];
+}
+
+export interface ProductVariation {
+    id: string;
+    upcCode: string;
+    name: string;
+    description: string;
+    specifications?: ProductSpecification[];
+    status: string;
+}
+
+export interface ProductSpecification {
+    specName: string;
+    specValue: string;
+    specUnit: string;
 }
 
 interface ProductsResponse {
@@ -45,7 +61,7 @@ export default function ProductsPage() {
 
     useEffect(() => {
         console.log(`Fetching products... ${currentPage} ${pageSize} ${queryStrings}`);
-        fetch(`http://localhost:8080/app/products?page=${currentPage}&size=${pageSize}&${queryStrings}`)
+        fetch(`/backend/products?page=${currentPage}&size=${pageSize}&${queryStrings}`)
             .then((response) => response.json())
             .then((data: ProductsResponse) => {
                 setProducts(data.products);

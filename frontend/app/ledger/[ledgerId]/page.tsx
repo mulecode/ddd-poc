@@ -40,7 +40,7 @@ export default function LedgerViewPage() {
     useEffect(() => {
         if (!ledgerId) return;
 
-        fetch(`http://localhost:8080/app/ledger/accounts/${ledgerId}?historySize=${ledgerHistorySize}`)
+        fetch(`/backend/ledger/accounts/${ledgerId}?historySize=${ledgerHistorySize}`)
             .then((response) => {
                 if (!response.ok) {
                     throw new Error(`Ledger not found (ID: ${ledgerId})`);

@@ -19,7 +19,7 @@ export default function LedgerCreatePage() {
         setError(null);
         setSuccess(null);
         try {
-            const response = await fetch(`http://localhost:8080/app/ledger/accounts`, {
+            const response = await fetch(`/baclend/ledger/accounts`, {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(payload),

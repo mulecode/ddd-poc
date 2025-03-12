@@ -25,8 +25,7 @@ export default function UserViewPage() {
 
     useEffect(() => {
         if (!userId) return;
-
-        fetch(`http://localhost:8080/app/users/${userId}`)
+        fetch(`/backend/users/${userId}`)
             .then((response) => {
                 if (!response.ok) {
                     throw new Error(`User not found (ID: ${userId})`);
