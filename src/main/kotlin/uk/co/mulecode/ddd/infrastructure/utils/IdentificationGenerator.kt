@@ -9,7 +9,7 @@ class IdentificationGenerator {
     companion object {
 
         private val secureRandom = SecureRandom()
-        private const val BASE36_ALPHABET = "23456789ABCDEFGHJKLMNPRSTUVWXYZ"
+        private val CUSTOM_BASE32_ALPHABET = "23456789ABCDEFGHJKLMNPRSTUVWXYZ"
 
         @JvmStatic
         fun sortedUuid(): UUID {
@@ -17,12 +17,23 @@ class IdentificationGenerator {
         }
 
         @JvmStatic
-        fun randomBase36Id(size: Int = 10): String {
-            val timestamp = Instant.now().epochSecond.toString(36).uppercase()
+        fun randomBase32Id(size: Int = 17): String {
+            val now = Instant.now()
+            val timestamp = toCustomBase32(now.epochSecond * 1_000 + now.nano / 1_000_000)
             val randomPart = (1..size - timestamp.length)
-                .map { BASE36_ALPHABET[secureRandom.nextInt(BASE36_ALPHABET.length)] }
+                .map { CUSTOM_BASE32_ALPHABET[secureRandom.nextInt(CUSTOM_BASE32_ALPHABET.length)] }
                 .joinToString("")
-            return (timestamp + randomPart).take(size)
+            return timestamp + randomPart
+        }
+
+        private fun toCustomBase32(value: Long): String {
+            var num = value
+            val result = StringBuilder()
+            while (num > 0) {
+                result.append(CUSTOM_BASE32_ALPHABET[(num % 32).toInt()])
+                num /= 32
+            }
+            return result.reverse().toString()
         }
     }
 }

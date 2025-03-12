@@ -1,6 +1,6 @@
 package uk.co.mulecode.ddd.domain.model
 
-import uk.co.mulecode.ddd.infrastructure.utils.IdentificationGenerator.Companion.randomBase36Id
+import uk.co.mulecode.ddd.infrastructure.utils.IdentificationGenerator.Companion.randomBase32Id
 import uk.co.mulecode.ddd.infrastructure.utils.IdentificationGenerator.Companion.sortedUuid
 import java.math.BigDecimal
 import java.util.UUID
@@ -121,7 +121,7 @@ class ProductModel(
         ) = ProductModel(
             product = object : Product {
                 override val id: UUID = sortedUuid()
-                override val code: String = randomBase36Id()
+                override val code: String = randomBase32Id()
                 override var manufacturer: String = manufacturer
                 override var supplier: String = supplier
                 override var brand: String = brand
