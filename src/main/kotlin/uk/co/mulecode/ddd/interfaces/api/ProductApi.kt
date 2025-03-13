@@ -19,6 +19,7 @@ import uk.co.mulecode.ddd.application.dto.ProductVariationRegistrationRequest
 import uk.co.mulecode.ddd.application.dto.ProductVariationSpecificationRequest
 import uk.co.mulecode.ddd.application.dto.ProductVariationUpdateRequest
 import uk.co.mulecode.ddd.domain.model.ProductFilter
+import uk.co.mulecode.ddd.domain.model.ProductViewConfig
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
 
@@ -40,7 +41,8 @@ interface ProductApi {
 
     @GetMapping("/{productId}")
     fun getProductById(
-        @PathVariable productId: UUID
+        @PathVariable productId: UUID,
+        @Valid @ModelAttribute viewConfig: ProductViewConfig
     ): CompletableFuture<ProductDto>
 
     @GetMapping

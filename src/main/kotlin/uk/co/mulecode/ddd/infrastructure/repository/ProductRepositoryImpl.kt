@@ -14,6 +14,7 @@ import uk.co.mulecode.ddd.domain.model.ProductModel
 import uk.co.mulecode.ddd.domain.model.ProductStatus
 import uk.co.mulecode.ddd.domain.model.ProductVariationModel
 import uk.co.mulecode.ddd.domain.model.ProductVariationSpecification
+import uk.co.mulecode.ddd.domain.model.ProductViewConfig
 import uk.co.mulecode.ddd.domain.repository.ProductRepository
 import uk.co.mulecode.ddd.infrastructure.repository.jpa.JpaProductEntity
 import uk.co.mulecode.ddd.infrastructure.repository.jpa.JpaProductRepository
@@ -33,21 +34,27 @@ class ProductRepositoryImpl(
     private val log = KotlinLogging.logger {}
 
     @Transactional
-    override fun findById(id: UUID): ProductModel {
+    override fun findById(id: UUID, viewConfig: ProductViewConfig): ProductModel {
         return jpaProductRepository.findByIdOrNull(id)
             ?.let { product ->
-                val allVariations = jpaProductVariationRepository.findAllByProductId(product.id)
-                val idToSpecifications = jpaProductVariationSpecificationRepository
-                    .findAllByProductIdAndVariationIdIsIn(product.id, allVariations.map { it.id })
-                    .groupBy { it.variationId }
+
+                val allVariations = viewConfig.withVariations
+                    .takeIf { it }
+                    ?.let { getVariations(product) }
+
+                val idToSpecificationsMap = allVariations
+                    ?.takeIf { viewConfig.withSpecifications }
+                    ?.map { it.id }
+                    ?.let { variationIds -> getVariationsSpecifications(product, variationIds) }
+                    ?.groupBy { it.variationId }
+
                 ProductModel(
                     product = product,
-                    variations = allVariations.map { productVariation ->
+                    variations = allVariations?.map { productVariation ->
                         ProductVariationModel(
                             productVariation = productVariation,
-                            specifications = idToSpecifications[productVariation.id]
+                            specifications = idToSpecificationsMap?.get(productVariation.id)
                                 ?.toMutableList()
-                                ?: mutableListOf()
                         )
                     }
                 )
@@ -98,7 +105,7 @@ class ProductRepositoryImpl(
             }
         }
 
-        return findById(entity.id)
+        return findById(entity.id, ProductViewConfig())
     }
 
     override fun findAll(pageable: Pageable, filter: ProductFilter?): ProductListModel {
@@ -117,6 +124,17 @@ class ProductRepositoryImpl(
             })
         }
     }
+
+    private fun getVariationsSpecifications(
+        product: JpaProductEntity,
+        variationIds: List<UUID>
+    ) = jpaProductVariationSpecificationRepository.findAllByProductIdAndVariationIdIsIn(
+        productId = product.id, variationIds = variationIds
+    )
+
+    private fun getVariations(product: JpaProductEntity) =
+        jpaProductVariationRepository.findAllByProductId(product.id)
+
 }
 
 

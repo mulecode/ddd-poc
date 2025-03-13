@@ -1,5 +1,6 @@
 package uk.co.mulecode.ddd.application.dto
 
+import com.fasterxml.jackson.annotation.JsonInclude
 import jakarta.validation.Valid
 import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Size
@@ -33,6 +34,7 @@ data class ProductDto(
     var subCategory: String,
     var originCountryCode: String,
     var status: ProductStatus,
+    @field:JsonInclude(JsonInclude.Include.NON_NULL)
     var variations: List<ProductVariationDto>? = null,
 )
 

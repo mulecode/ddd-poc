@@ -11,6 +11,7 @@ import uk.co.mulecode.ddd.application.dto.ProductVariationSpecificationRequest
 import uk.co.mulecode.ddd.application.dto.ProductVariationUpdateRequest
 import uk.co.mulecode.ddd.application.service.ProductService
 import uk.co.mulecode.ddd.domain.model.ProductFilter
+import uk.co.mulecode.ddd.domain.model.ProductViewConfig
 import uk.co.mulecode.ddd.interfaces.api.ProductApi
 import java.util.UUID
 import java.util.concurrent.CompletableFuture
@@ -35,9 +36,9 @@ class ProductController(
     }
 
     @Async("controllerTreadPoolExecutor")
-    override fun getProductById(productId: UUID): CompletableFuture<ProductDto> {
+    override fun getProductById(productId: UUID, viewConfig: ProductViewConfig): CompletableFuture<ProductDto> {
         return CompletableFuture.completedFuture(
-            productService.getProductById(productId)
+            productService.getProductById(productId, viewConfig)
         )
     }
 

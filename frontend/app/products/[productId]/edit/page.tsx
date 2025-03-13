@@ -18,7 +18,7 @@ export default function ProductEditPage() {
     useEffect(() => {
         if (!productId) return;
         setLoading(true);
-        fetch(`/backend/products/${productId}`)
+        fetch(`/backend/products/${productId}?withVariations=false`)
             .then((response) => {
                 if (!response.ok) {
                     throw new Error(`Product not found (ID: ${productId})`);

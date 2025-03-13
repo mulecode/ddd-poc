@@ -45,6 +45,11 @@ interface SellingDetails {
     var isTaxExempt: Boolean
 }
 
+data class ProductViewConfig(
+    val withVariations: Boolean = true,
+    val withSpecifications: Boolean = true
+)
+
 interface ProductFilter {
     val id: UUID?
     val code: String?

@@ -15,6 +15,7 @@ import uk.co.mulecode.ddd.domain.model.ProductFilter
 import uk.co.mulecode.ddd.domain.model.ProductModel
 import uk.co.mulecode.ddd.domain.model.ProductVariationModel
 import uk.co.mulecode.ddd.domain.model.ProductVariationSpecification
+import uk.co.mulecode.ddd.domain.model.ProductViewConfig
 import uk.co.mulecode.ddd.domain.repository.ProductRepository
 import java.util.UUID
 
@@ -45,7 +46,7 @@ class ProductService(
     @Transactional
     fun updateProduct(productId: UUID, updatedProduct: ProductRegistrationRequest): ProductDto {
         log.debug { "Updating product: $productId" }
-        return productRepository.findById(productId)
+        return productRepository.findById(productId, ProductViewConfig())
             .let { model ->
                 model.product.name = updatedProduct.name
                 model.product.description = updatedProduct.description
@@ -60,9 +61,9 @@ class ProductService(
     }
 
     @Transactional(readOnly = true)
-    fun getProductById(productId: UUID): ProductDto {
+    fun getProductById(productId: UUID, viewConfig: ProductViewConfig): ProductDto {
         log.debug { "Getting product by id: $productId" }
-        return productRepository.findById(productId).dto()
+        return productRepository.findById(productId, viewConfig).dto()
     }
 
     @Transactional(readOnly = true)
@@ -82,7 +83,7 @@ class ProductService(
     @Transactional
     fun registerVariation(productId: UUID, request: ProductVariationRegistrationRequest): ProductDto {
         log.debug { "Registering product variation for product: $productId" }
-        return productRepository.findById(productId)
+        return productRepository.findById(productId, ProductViewConfig())
             .let { model ->
                 model.addVariation(
                     ProductVariationModel.create(
@@ -98,7 +99,7 @@ class ProductService(
     @Transactional
     fun updateProductVariation(productId: UUID, variationId: UUID, request: ProductVariationUpdateRequest): ProductDto {
         log.debug { "Updating product variation for product: $productId" }
-        return productRepository.findById(productId)
+        return productRepository.findById(productId, ProductViewConfig())
             .let { model ->
                 model.updateVariationDetails(
                     variationId = variationId,
@@ -116,7 +117,7 @@ class ProductService(
         request: ProductVariationSpecificationRequest
     ): ProductDto {
         log.debug { "Updating product variation specs for product: $productId" }
-        return productRepository.findById(productId)
+        return productRepository.findById(productId, ProductViewConfig())
             .let { model ->
                 model.getVariation(variationId).updateSpecifications(
                     specifications = request.specifications.map {
