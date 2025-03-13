@@ -78,7 +78,7 @@ export default function ProductEditPage() {
 
                 {(!loading && !formData) && (
                     <div>
-                        <AppButton variant="primary" onClick={() => router.push("/products")}>
+                        <AppButton variant="primary" onClick={() => router.push(`/products/${productId}`)}>
                             Go Back
                         </AppButton>
                     </div>
@@ -90,7 +90,7 @@ export default function ProductEditPage() {
                         loading={loading}
                         data={formData}
                         onSave={(data) => handleSubmit(data)}
-                        onCancel={() => router.push("/products")}
+                        onCancel={() => router.push(`/products/${productId}`)}
                     />
                 )}
             </main>

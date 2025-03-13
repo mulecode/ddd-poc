@@ -51,7 +51,13 @@ export default function ProductViewPage() {
                 {error && <p className="text-red-500">{error}</p>}
                 {data && (
                     <div>
-                        <h1 className="text-2xl font-bold mb-4">Product Details</h1>
+                        <div className="flex gap-5 items-center pb-4">
+                            <h1 className="text-2xl font-bold">Product Details</h1>
+                            <AppButton variant="secondary" onClick={() => router.push(`/products/${productId}/edit`)}>
+                                Edit
+                            </AppButton>
+                        </div>
+
                         <AppDataView>
                             <AppDataViewItem title="Product ID">
                                 {data.id}
@@ -89,6 +95,7 @@ export default function ProductViewPage() {
                                 />
                             </AppDataViewItem>
                         </AppDataView>
+
                         <h1 className="text-xl font-bold mb-4 pt-5">Product Variations</h1>
 
                         {data.variations?.map(variation => (
@@ -113,7 +120,7 @@ export default function ProductViewPage() {
                                 <AppDataViewItem title="Specifications">
                                     {variation.specifications?.map(spec => (
                                         <AppBadge key={spec.specName}
-                                            text={spec.specName + ":" + spec.specValue + " " + spec.specUnit}
+                                                  text={spec.specName + ":" + spec.specValue + " " + spec.specUnit}
                                                   colourConfig={badgerStatusConfig}
                                         />
                                     ))}
@@ -124,9 +131,6 @@ export default function ProductViewPage() {
                         <AppActionMenu>
                             <AppButton variant="secondary" onClick={() => router.push("/products")}>
                                 Cancel
-                            </AppButton>
-                            <AppButton variant="primary" onClick={() => router.push(`/products/${productId}/edit`)}>
-                                Edit
                             </AppButton>
                         </AppActionMenu>
                     </div>
