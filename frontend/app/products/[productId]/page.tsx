@@ -112,7 +112,8 @@ export default function ProductViewPage() {
                                 </AppDataViewItem>
                                 <AppDataViewItem title="Specifications">
                                     {variation.specifications?.map(spec => (
-                                        <AppBadge text={spec.specName + ":" + spec.specValue + " " + spec.specUnit}
+                                        <AppBadge key={spec.specName}
+                                            text={spec.specName + ":" + spec.specValue + " " + spec.specUnit}
                                                   colourConfig={badgerStatusConfig}
                                         />
                                     ))}
