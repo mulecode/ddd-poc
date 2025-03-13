@@ -17,7 +17,7 @@ export default function ProductCreatePage() {
         setError(null);
         setSuccess(null);
         try {
-            const response = await fetch("/backend/app/products", {
+            const response = await fetch("/backend/products", {
                 method: "POST",
                 headers: {"Content-Type": "application/json"},
                 body: JSON.stringify(payload),
